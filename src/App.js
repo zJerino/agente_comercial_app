@@ -25,7 +25,6 @@ function children(oitem) {
 
   let Childs = item.children.map((Child) => {
     Child = Object.assign({...routesSchema}, Child);
-    console.debug(Child);
     if (Child.children.length > 0) {
       return children(Child);
     } else {
