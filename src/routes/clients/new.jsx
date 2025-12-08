@@ -1,0 +1,154 @@
+import { useNavigate } from 'react-router';
+import { useState } from 'react';
+import { useLocalStorage } from "react-use";
+
+function tryParseJSON(value) {
+    if (typeof value !== "string") {
+      return null;
+    }
+    try {
+      const parsed = JSON.parse(value);
+      return parsed;
+    } catch (e) {
+      return null;
+    }
+  }
+
+/**
+ * Esquema de clientes
+ */
+let clientSchema = {
+    id: '',
+    fullname: '',
+    contactNumber: '',
+    hasWhatsapp: false,
+
+    businessName: '',
+    businessImg: "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxNiIgaGVpZ2h0PSIxNiIgZmlsbD0iY3VycmVudENvbG9yIiBjbGFzcz0iYmkgYmktY2FtZXJhLWZpbGwiIHZpZXdCb3g9IjAgMCAxNiAxNiI+CiAgPHBhdGggZD0iTTEwLjUgOC41YTIuNSAyLjUgMCAxIDEtNSAwIDIuNSAyLjUgMCAwIDEgNSAwIi8+CiAgPHBhdGggZD0iTTIgNGEyIDIgMCAwIDAtMiAydjZhMiAyIDAgMCAwIDIgMmgxMmEyIDIgMCAwIDAgMi0yVjZhMiAyIDAgMCAwLTItMmgtMS4xNzJhMiAyIDAgMCAxLTEuNDE0LS41ODZsLS44MjgtLjgyOEEyIDIgMCAwIDAgOS4xNzIgMkg2LjgyOGEyIDIgMCAwIDAtMS40MTQuNTg2bC0uODI4LjgyOEEyIDIgMCAwIDEgMy4xNzIgNHptLjUgMmEuNS41IDAgMSAxIDAtMSAuNS41IDAgMCAxIDAgMW05IDIuNWEzLjUgMy41IDAgMSAxLTcgMCAzLjUgMy41IDAgMCAxIDcgMCIvPgo8L3N2Zz4=",
+    businessAddress: '',
+    businessGeo: '',
+}
+
+export default function Main() {
+    const [value, setValue] = useLocalStorage('clients', "[]");
+    const [client, setClient] = useState(clientSchema);
+    const [imageUploaded, setImageUpload] = useState(false);
+    const navigate = useNavigate();
+
+    let imgDefault = 'https://placehold.co/100?text=';
+
+    const data = tryParseJSON(value) || [];
+
+    /**
+     * Maneja la captura de imagen y la convierte a Base64 para guardarla en localStorage.
+     */
+    const handleImageCapture = (event) => {
+        const file = event.target.files[0];
+        if (!file) return;
+
+        const reader = new FileReader();
+        reader.onloadend = () => {
+            setClient((prevClient) => ({
+                ...prevClient,
+                businessImg: reader.result
+            }));
+            
+            setImageUpload(true);
+        };
+        reader.onerror = (error) => {
+            console.error("Error:", error);
+        };
+
+        reader.readAsDataURL(file);
+    };
+
+    /**
+     * Maneja el guardado del cliente en localStorage
+     */
+    const handleSubmit = (event) => {
+        event.preventDefault();
+
+        const newClient = {
+            ...client,
+            id: crypto.randomUUID(),
+            businessImg: client.businessImg || "" // Usar la imagen por defecto si no se proporciona
+        };
+      
+        const currentClients = Array.isArray(data) ? data : [];
+
+        const updatedData = [...currentClients, newClient];
+
+        setValue(JSON.stringify(updatedData));
+
+        navigate('/clients');
+    };
+    
+    /**
+     * Maneja los cambios de los inputs y los guarda en un estado
+     */
+    const handleChange = (event) => {
+        const { name, value, type, checked } = event.target;
+
+        if (name === 'businessName' && !imageUploaded) {
+            setClient((prevClient) => ({
+                ...prevClient,
+                businessImg: imgDefault + value.charAt(0)
+            }));
+        }
+
+        setClient((prevClient) => ({
+            ...prevClient,
+            [name]: type === "checkbox" ? checked : value
+        }));
+    };
+
+    return (
+        <div className="flex flex-col my-3">
+            <form className="mx-auto flex w-full max-w-md flex-col gap-6" onSubmit={handleSubmit}>
+                <div className="flex flex-col items-center">
+                    <label className="mb-2" htmlFor="imageup">
+                        <img className="rounded-full size-[7rem] mx-auto border-[1px]" src={client.businessImg} alt="Me at the park."/>
+                        <input type="file" id="imageup" hidden capture="environment" accept="image/*" onChange={handleImageCapture}/>
+                    </label>
+                    <h1 className="text-3xl font-semibold">Nuevo cliente</h1>
+                    <p className="text-sm">Agrega la informacion de tu nuevo cliente</p>
+                </div>
+                <div className="form-group">
+                    <div className="form-field">
+                        <label className="form-label">Nombre del cliente</label>
+                        <input placeholder="Type here" name="fullname" type="text" className="input max-w-full" onChange={handleChange}/>
+                    </div>
+                    <div className="form-field">
+                        <label className="form-label">Numero de contacto</label>
+                        <input placeholder="Type here" name="contactNumber" type="number" className="input max-w-full" onChange={handleChange}/>
+                    </div>
+                    <div className="form-field">
+                        <label className="form-label">Nombre del negocio</label>
+                        <input placeholder="Type here" name="businessName" type="text" className="input max-w-full" onChange={handleChange}/>
+                    </div>
+                    <div className="form-field">
+                        <label className="form-label">Direccion del negocio</label>
+                        <input placeholder="Type here" name="businessAddress" type="text" className="input max-w-full" onChange={handleChange}/>
+                    </div>
+                    <div className="form-field">
+                        <label className="form-label">Informacion GPS</label>
+                        <input placeholder="Type here" name="businessGeo" type="text" readOnly className="input max-w-full" onChange={handleChange}/>
+                    </div>
+                    <div className="form-field">
+                        <div className="form-control justify-between">
+                            <div className="flex gap-2">
+                                <input type="checkbox" name="hasWhatsapp" className="checkbox" onChange={handleChange}/>
+                                <span>Tiene whatsapp</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div className="form-field pt-5">
+                        <div className="form-control justify-between">
+                            <button type="submit" className="btn btn-primary w-full">Guardar</button>
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </div>
+    );
+}

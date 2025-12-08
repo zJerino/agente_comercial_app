@@ -19,9 +19,10 @@ const rutas = [
 ];
 
 export default function bottomBar() {
-    let links = rutas.map((item) => {
+    // let activeClass = 'bg-primary/10 text-primary';
+    let links = rutas.map((item, i) => {
         return (
-            <Link to={item.to} className="flex flex-col justify-center max-w-[3rem] w-full mx-auto text-stone-500 text-center">
+            <Link to={item.to} key={i} className="flex flex-col justify-center max-w-[5rem] mx-auto p-1 rounded-full text-center text-stone-500 w-full">
                 <i className={'bi bi-' + item.icon + ' text-[1.5rem]'}></i>
                 <span className="text-[.85rem]">{item.text}</span>
             </Link>

@@ -1,9 +1,6 @@
 import { Routes, Route } from "react-router";
 import RoutesList from './configs/routes';
 
-// import logo from './logo.svg';
-import './App.css';
-
 /**
  * Esquema de como debe definirse las rutas en la configuracion de rutas
  */
