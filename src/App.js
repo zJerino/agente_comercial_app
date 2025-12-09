@@ -1,3 +1,4 @@
+import { Suspense } from 'react';
 import { Routes, Route } from "react-router";
 import RoutesList from './configs/routes';
 
@@ -48,6 +49,17 @@ function children(oitem) {
   }
 }
 
+function Loading() {
+  return (
+    <div className="absolute w-[100vw] h-[100svh] flex flex-col justify-center items-center gap-[1rem] bg-gray-200 bg-opacity-25">
+      <h5 className="text-black-500">Cargando</h5>
+      <svg className="spinner-ring" viewBox="25 25 50 50" stroke-width="5">
+        <circle cx="50" cy="50" r="20" />
+      </svg>
+    </div>
+  );
+}
+
 function App() {
   let Rou = RoutesList.map((R) => {
     if (R.children.length > 0) {
@@ -60,9 +72,11 @@ function App() {
   })
   
   return (
-    <Routes>
-      {Rou}
-    </Routes>
+    <Suspense fallback={<Loading />}>
+      <Routes>
+        {Rou}
+      </Routes>
+    </Suspense>
   );
 }
 

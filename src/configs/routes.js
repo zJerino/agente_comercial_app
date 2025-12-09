@@ -1,11 +1,14 @@
+import { lazy } from 'react';
 import { Outlet } from 'react-router';
 import MainLayout from '../layouts/main';
 import FormsLayout from '../layouts/forms';
+
 import Home from '../routes/home';
-import ClientsIndex from '../routes/clients/index';
-import ClientsNew from '../routes/clients/new';
-import ClientsView from '../routes/clients/view';
 import NoFound from '../routes/404';
+
+/**
+ * Contenedor de rutas
+ */
 const routes = [];
 
 /**
@@ -30,6 +33,9 @@ routes.push({
 /**
  * Rutas de clientes
  */
+const ClientsIndex = lazy(() => import('../routes/clients/index'));
+const ClientsNew = lazy(() => import('../routes/clients/new'));
+const ClientsView = lazy(() => import('../routes/clients/view'));
 
 routes.push({
     path: '/clients',
