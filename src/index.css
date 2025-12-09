@@ -20,6 +20,10 @@ body {
   text-shadow: 0 0 grey
 }
 
+.fv-small {
+    font-variant: all-small-caps;
+}
+
 code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
     monospace;
