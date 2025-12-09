@@ -35,7 +35,9 @@ jobs:
         
       - name: Build Project
         run: npm run build
-        
+        env:
+          PUBLIC_URL: /agente_comercial_app
+
       - name: Setup Pages
         uses: actions/configure-pages@v5
         
