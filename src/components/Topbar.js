@@ -6,7 +6,7 @@ const Dropdown = lazy(() => import('./Dropdown'));
 /**
  * Componente | Topbar
  */
-export default function TopBar({ title = 'TestAPP', titleType = 'normal', back = null, menu = null }) {
+export default function TopBar({ title = 'AgenteComercialApp', titleType = 'normal', back = null, menu = null }) {
   const navigate = useNavigate();
 
   const BackButton = back ? (<i className="bi bi-chevron-left absolute p-2 cursor-pointer transition-colors hover:text-gray-600"  onClick={() => navigate(back)} aria-label="Volver a la página anterior" ></i> ) : null;
