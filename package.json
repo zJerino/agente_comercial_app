@@ -1,6 +1,5 @@
 {
   "name": "AgenteComercialApp",
-  "homepage": "https://zjerino.github.io/agente_comercial_app/",
   "version": "0.0.1",
   "private": true,
   "dependencies": {
