@@ -1,37 +1,10 @@
 import { Link } from 'react-router';
 import { useLocalStorage } from "react-use";
-
-function tryParseJSON(value) {
-    if (typeof value !== "string") {
-      return null;
-    }
-    try {
-      const parsed = JSON.parse(value);
-      return parsed;
-    } catch (e) {
-      return null;
-    }
-  }
-
-/**
- * Esquema de clientes
- */
-let clientSchema = {
-    id: '',
-    fullname: '',
-    contactNumber: '',
-    hasWhatsapp: false,
-
-    businessName: '',
-    businessImg: '',
-    businessAddress: '',
-    businessGeo: '',
-    createdAt: 0,
-}
+import { schema as clientSchema, dbName as clientDB } from '../../configs/clients';
+import { tryParseJSON } from '../../configs/utils';
 
 export default function Main() {
-    const [value] = useLocalStorage('clients', "[]");
-
+    const [value] = useLocalStorage(clientDB, "[]");
     const data = tryParseJSON(value) || [];
 
     /**
