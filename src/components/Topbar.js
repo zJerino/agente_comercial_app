@@ -1,10 +1,11 @@
+import { lazy } from "react";
 import { useNavigate } from "react-router";
 
 /**
  * Componente | AppHeader
  */
 
-export default function TopBar({title = 'AgenteComercialApp', titleType = 'normal', back = null}) {
+export default function TopBar({title = 'AgenteComercialApp', titleType = 'normal', back = null, menu = null}) {
   const navigate = useNavigate();
 
   /**
@@ -26,11 +27,23 @@ export default function TopBar({title = 'AgenteComercialApp', titleType = 'norma
     backBtn = <i className="bi bi-chevron-left absolute p-2" onClick={() => navigate(back)}></i>;
   }
 
+  /**
+   * Menu
+   */
+  let menuBtn = '';
+  if (Array.isArray(menu)) {
+    let Drop = lazy(() => import('./Dropdown'));
+    menuBtn = (
+      <Drop items={menu} className="absolute right-[1rem]" btnclass="text-shadow-custom-topbar text-black"/>
+    );
+  }
+
   if (titleType === 'none') {
     return (
-      <div className="absolute px-3 py-2 w-full z-[120]" style={{textShadow: "0 0 grey"}}>
+      <div className="absolute px-3 py-2 w-full z-[120] text-shadow-custom-topbar">
         <div className="px-2 py-5 flex items-center">
-          {backBtn}        
+          {backBtn}
+          {menuBtn}
         </div>
       </div>
     );

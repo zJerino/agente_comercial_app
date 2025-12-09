@@ -15,6 +15,11 @@ body {
 .react-international-phone-country-selector {
   width: 3.5rem;
 }
+
+.text-shadow-custom-topbar {
+  text-shadow: 0 0 grey
+}
+
 code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
     monospace;
