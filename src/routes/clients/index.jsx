@@ -26,6 +26,7 @@ let clientSchema = {
     businessImg: '',
     businessAddress: '',
     businessGeo: '',
+    createdAt: 0,
 }
 
 export default function Main() {
