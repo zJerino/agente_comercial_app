@@ -4,7 +4,7 @@ import { useNavigate } from "react-router";
  * Componente | AppHeader
  */
 
-export default function TopBar({title = 'Emprende App', titleType = 'normal', back = null}) {
+export default function TopBar({title = 'AgenteComercialApp', titleType = 'normal', back = null}) {
   const navigate = useNavigate();
 
   /**
