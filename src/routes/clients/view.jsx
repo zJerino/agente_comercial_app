@@ -57,7 +57,7 @@ export default function Main() {
 
         return (
             <>
-                <img className="rounded-b-[0.5rem] w-full h-[25vh]" src={client.businessImg} alt="Me at the park." />
+                <img className="rounded-b-[0.5rem] w-full h-[25vh]" style={{backgroundImage: 'linear-gradient(to top, #0000000a, transparent)'}} src={client.businessImg} alt="Me at the park." />
                 <div className="flex flex-col my-3">
                     <div className="mx-auto flex w-full max-w-md flex-col gap-6">
                         <div className="flex flex-col items-center">
@@ -68,8 +68,8 @@ export default function Main() {
                             <a class="btn btn-solid-primary btn-block justify-start text-start" href={'tel://' + client.contactNumber}>
                                 <i className="bi bi-telephone me-2"></i> Llamar
                             </a>
-                            {mapLink != null ? (<a class="btn btn-solid-primary btn-block justify-start text-start" href={mapLink}> <i className="bi bi-geo-alt text-[1rem] me-2"></i> Ver mapa </a>) : ''}
-                            {wsLink != null ? (<a class="btn btn-solid-success btn-block justify-start text-start" href={wsLink}><i className="bi bi-whatsapp me-2"></i> Ir a WhatsApp</a>) : ''}
+                            {mapLink != null ? (<a class="btn btn-solid-primary btn-block justify-start text-start" href={mapLink} rel="noreferrer" target="_blank"> <i className="bi bi-geo-alt text-[1rem] me-2"></i> Ver mapa </a>) : ''}
+                            {wsLink != null ? (<a class="btn btn-solid-success btn-block justify-start text-start" href={wsLink} rel="noreferrer" target="_blank"><i className="bi bi-whatsapp me-2"></i> Ir a WhatsApp</a>) : ''}
                         </div>
                     </div>
                 </div>
