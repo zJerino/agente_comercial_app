@@ -19,7 +19,7 @@ const rutas = [
 ];
 
 export default function bottomBar() {
-    let classes = "flex flex-col justify-center max-w-[5rem] mx-auto p-1 rounded-full text-center w-full";
+    let classes = "flex flex-col justify-center max-w-[7rem] mx-auto p-1 rounded-full text-center w-full";
     let activeClass = ' bg-primary/10 text-primary';
     let links = rutas.map((item, i) => {
         return (
@@ -30,7 +30,7 @@ export default function bottomBar() {
         );
     });
     return (
-        <div className="border-t-[1px] px-3 py-2">
+        <div className="border-t-[1px] px-3 py-1">
             <div className="flex">
                 {links}
             </div>
