@@ -56,11 +56,10 @@ routes.push({
         {
             path: ':id',
             element: <MainLayout titleType="none" back='/clients' menu={[{ text: 'Borrar cliente', icon: 'trash', modal: 'modal-delete' } ]}/>,
-            options: {index: false},
             children: [
                 {
-                    element: <ClientsView />,
-                    options: {index: true}
+                    path: 'overview',
+                    element: <ClientsView />
                 }
             ]
         },

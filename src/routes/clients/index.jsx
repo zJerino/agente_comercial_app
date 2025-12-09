@@ -18,7 +18,7 @@ export default function Main() {
         }
 
         return (
-            <Link to={'/clients/' + item.id} key={i} className="flex p-3 border-b-[1px] items-center ">
+            <Link to={'/clients/' + item.id + '/overview'} key={i} className="flex p-3 border-b-[1px] items-center ">
                 <img src={item.businessImg} className="rounded-full me-2 size-[3rem]"  alt="Me at the park."/>
                 <div className="flex flex-col">
                     <span className="text-black-900">
