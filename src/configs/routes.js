@@ -49,7 +49,7 @@ routes.push({
         },
         {
             path: ':id',
-            element: <MainLayout title="Nuevo cliente" back='/clients' />,
+            element: <MainLayout titleType="none" back='/clients' />,
             options: {index: false},
             children: [
                 {

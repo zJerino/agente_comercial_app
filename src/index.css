@@ -9,6 +9,12 @@ body {
   -moz-osx-font-smoothing: grayscale;
 }
 
+.react-international-phone-input {
+  width: 100%
+}
+.react-international-phone-country-selector {
+  width: 3.5rem;
+}
 code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
     monospace;

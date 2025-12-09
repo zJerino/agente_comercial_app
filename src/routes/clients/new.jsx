@@ -1,6 +1,8 @@
 import { useNavigate } from 'react-router';
-import { useState } from 'react';
-import { useLocalStorage } from "react-use";
+import { useState, useEffect } from 'react';
+import { useLocalStorage, useGeolocation } from "react-use";
+import { PhoneInput } from 'react-international-phone';
+import 'react-international-phone/style.css';
 
 function tryParseJSON(value) {
     if (typeof value !== "string") {
@@ -33,7 +35,17 @@ export default function Main() {
     const [value, setValue] = useLocalStorage('clients', "[]");
     const [client, setClient] = useState(clientSchema);
     const [imageUploaded, setImageUpload] = useState(false);
+    const geoLoca = useGeolocation();
     const navigate = useNavigate();
+
+    
+    useEffect(() => {
+        // Solo actualiza si la geolocalización no está cargando y tiene latitud
+        if (!geoLoca.loading && geoLoca.latitude) {
+        const newGeo = `${geoLoca.latitude} ${geoLoca.longitude}`;
+        setClient((c) => ({ ...c, businessGeo: newGeo }));
+        }
+    }, [geoLoca.loading, geoLoca.latitude, geoLoca.longitude]);
 
     let imgDefault = 'https://placehold.co/100?text=';
 
@@ -120,7 +132,9 @@ export default function Main() {
                     </div>
                     <div className="form-field">
                         <label className="form-label">Numero de contacto</label>
-                        <input placeholder="Type here" name="contactNumber" type="number" className="input max-w-full" onChange={handleChange}/>
+                        <PhoneInput placeholder="Type here" name="contactNumber" defaultCountry="ve" className="max-w-full" onChange={(value, meta) => {
+                            setClient((prevClient) => ({...prevClient, contactNumber: value}));
+                        }} />
                     </div>
                     <div className="form-field">
                         <label className="form-label">Nombre del negocio</label>
@@ -132,13 +146,13 @@ export default function Main() {
                     </div>
                     <div className="form-field">
                         <label className="form-label">Informacion GPS</label>
-                        <input placeholder="Type here" name="businessGeo" type="text" readOnly className="input max-w-full" onChange={handleChange}/>
+                        <input placeholder="Type here" name="businessGeo" type="text" readOnly className="input max-w-full" onChange={handleChange} value={client.businessGeo} />
                     </div>
                     <div className="form-field">
                         <div className="form-control justify-between">
                             <div className="flex gap-2">
-                                <input type="checkbox" name="hasWhatsapp" className="checkbox" onChange={handleChange}/>
-                                <span>Tiene whatsapp</span>
+                                <input type="checkbox" name="hasWhatsapp" id="hasWhatsapp" className="checkbox" onChange={handleChange}/>
+                                <label htmlFor="hasWhatsapp">Tiene whatsapp</label>
                             </div>
                         </div>
                     </div>

@@ -28,7 +28,7 @@ export default function TopBar({title = 'Emprende App', titleType = 'normal', ba
 
   if (titleType === 'none') {
     return (
-      <div className="absolute px-3 py-2 w-full z-[120]">
+      <div className="absolute px-3 py-2 w-full z-[120]" style={{textShadow: "0 0 grey"}}>
         <div className="px-2 py-5 flex items-center">
           {backBtn}        
         </div>
