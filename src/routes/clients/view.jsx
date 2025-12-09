@@ -70,9 +70,6 @@ export default function Main() {
                             </a>
                             {mapLink != null ? (<a class="btn btn-solid-primary btn-block justify-start text-start" href={mapLink}> <i className="bi bi-geo-alt text-[1rem] me-2"></i> Ver mapa </a>) : ''}
                             {wsLink != null ? (<a class="btn btn-solid-success btn-block justify-start text-start" href={wsLink}><i className="bi bi-whatsapp me-2"></i> Ir a WhatsApp</a>) : ''}
-                            <label type="button" htmlFor="modal-delete" class="btn btn-solid-error btn-block justify-start text-start">
-                                <i className="bi bi-trash me-2"></i> Borrar
-                            </label>
                         </div>
                     </div>
                 </div>
