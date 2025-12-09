@@ -57,7 +57,7 @@ export default function Main() {
 
         return (
             <>
-                <img className="rounded-b-[0.5rem] w-full h-[25vh]" style={{backgroundImage: 'linear-gradient(to top, #0000000a, transparent)'}} src={client.businessImg} alt="Me at the park." />
+                <img className="rounded-b-[0.5rem] w-full h-[25vh] min-h-[8rem]" style={{backgroundImage: 'linear-gradient(to top, #0000000a, transparent)'}} src={client.businessImg} alt="Me at the park." />
                 <div className="flex flex-col my-3">
                     <div className="mx-auto flex w-full max-w-md flex-col gap-6">
                         <div className="flex flex-col items-center">

@@ -100,7 +100,7 @@ export default function Main() {
                     <h1 className="text-3xl font-semibold">Nuevo cliente</h1>
                     <p className="text-sm">Agrega la informacion de tu nuevo cliente</p>
                 </div>
-                <div className="form-group">
+                <div className="form-group px-3 sm:px-1">
                     <div className="form-field">
                         <label className="form-label">Nombre del cliente</label>
                         <input placeholder="Type here" name="fullname" type="text" className="input max-w-full" onChange={handleChange}/>
