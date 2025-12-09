@@ -37,6 +37,7 @@ jobs:
         run: npm run build
         env:
           PUBLIC_URL: /agente_comercial_app
+          REACT_APP_VERSION_ID: ${{ github.sha }}
 
       - name: Setup Pages
         uses: actions/configure-pages@v5
