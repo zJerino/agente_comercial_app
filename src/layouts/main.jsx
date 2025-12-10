@@ -8,14 +8,25 @@
 import TopBar from '../components/Topbar';
 import BottomBar from '../components/BottomBar';
 import { Outlet } from 'react-router';
+import { useState } from 'react';
 
-export default function Main({titleType, back, menu}) {
+export default function Main({titleType, back, menu, search = false}) {
+    const [searchVal, setSearchVal] = useState('');
+
+    let searchDef = null;
+    if (search) {
+        searchDef = {
+            onchange: (val) => {
+                setSearchVal(val);
+            }
+        }
+    }
     return (
         <div className="flex flex-col h-[100svh] z-[120]">
-            <TopBar titleType={titleType} back={back} menu={menu}/>            
+            <TopBar titleType={titleType} back={back} menu={menu} search={searchDef} />            
 
             <div className="flex-grow-[1] relative overflow-y-auto z-[100]">
-                <Outlet />
+                <Outlet context={{searchVal}} />
             </div>
             
             <BottomBar />

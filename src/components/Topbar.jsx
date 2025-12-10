@@ -1,13 +1,24 @@
-import { lazy, Suspense } from "react";
+import { lazy, Suspense, useState } from "react";
 import { useNavigate } from "react-router";
 
 const Dropdown = lazy(() => import('./Dropdown'));
+const SearchCom = lazy(() => import('./SearchComponent'));
+
+/**
+ * Esquema para usar boton de busqueda
+ */
+export const searchSchema = {
+  text: '',
+  icon: 'search',
+  onchange: null,
+}
 
 /**
  * Componente | Topbar
  */
-export default function TopBar({ title = 'AgenteComercialApp', titleType = 'normal', back = null, menu = null }) {
+export default function TopBar({ title = 'AgenteComercialApp', titleType = 'normal', back = null, menu = null, search = null }) {
   const navigate = useNavigate();
+  const [searchClose, setSearchClose] = useState(true);
 
   const BackButton = back ? (<i className="bi bi-chevron-left absolute p-2 cursor-pointer transition-colors hover:text-gray-600"  onClick={() => navigate(back)} aria-label="Volver a la página anterior" ></i> ) : null;
 
@@ -42,18 +53,37 @@ export default function TopBar({ title = 'AgenteComercialApp', titleType = 'norm
       </div>
     );
   }
+
+  /**
+   * Boton de busqueda
+   */
+  let searchBtn;
+  if (search != null && typeof search === 'object') {
+    search = Object.assign({...searchSchema}, search);
+    if (typeof search.onchange === 'function') {
+      searchBtn = (
+        <i className="bi bi-search cursor-pointer transition-colors hover:text-gray-600" onClick={() => setSearchClose(false)} aria-label="Search"></i>
+      );
+    }
+  }
+
   return (
     <div className="bg-white border-b border-gray-200 shadow-sm px-3 py-2 sticky top-0 z-50">
       <div className={`px-2 py-1 flex items-center ${titleType === 'center' ? 'justify-center' : 'justify-start'}`}>
-        <div className="absolute left-0 pl-3">
-           {BackButton}
-        </div>
+        {!searchClose ? <SearchCom onClose={() => setSearchClose(true)} onUpdate={search.onchange} /> : (
+          <>
+            <div className="absolute left-0 pl-3">
+              {BackButton}
+            </div>
 
-        {TitleElement}
+            {TitleElement}
 
-        <div className="absolute right-0 pr-3">
-          {MenuButton}
-        </div>
+            <div className="absolute right-0 pr-3">
+              {searchBtn}
+              {MenuButton}
+            </div>
+          </>
+        )}
       </div>
     </div>
   );

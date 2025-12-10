@@ -65,7 +65,7 @@ routes.push({
         },
 
         {
-            element: <MainLayout />,
+            element: <MainLayout search={true}/>,
             options: {
                 index: true
             },
