@@ -53,7 +53,7 @@ function Loading() {
   return (
     <div className="absolute w-[100vw] h-[100svh] flex flex-col justify-center items-center gap-[1rem] bg-gray-200 bg-opacity-25">
       <h5 className="text-black-500">Cargando</h5>
-      <svg className="spinner-ring" viewBox="25 25 50 50" stroke-width="5">
+      <svg className="spinner-ring" viewBox="25 25 50 50" strokeWidth="5">
         <circle cx="50" cy="50" r="20" />
       </svg>
     </div>

@@ -17,20 +17,30 @@ const apiRespondeSchema = {
 /**
  * Nos ayuda a saber si la fecha todavia esta bien
  */
-function isUpdated(dateStringOrObject) {
-    const fechaOriginal = new Date(dateStringOrObject);
+function isUpdated(fechaTasa) {
+    var now = new Date(); // Fecha de ahora
+    var tasa = new Date(fechaTasa);
+    var StartTasa = new Date(now); // Inicio de la tasa
+    var EndTasa = new Date(now); // Cierre de la tasa
 
-    if (isNaN(fechaOriginal.getTime())) {
-        console.error("Error: La entrada no es una fecha válida.");
-        return false;
+    /**
+     * Establecer el rango
+     */
+    if (17 > now.getHours()) {
+        EndTasa.setHours(17, 0, 0, 0); // Establece el fin de la tasa
+
+        // Establece el inicio de la tasa
+        StartTasa.setDate(now.getDate() - 1);
+        StartTasa.setHours(17, 0, 0, 0);
+    } else if (now.getHours() >= 17) {
+        // Establece el inicio de la tasa
+        StartTasa.setHours(17, 0, 0, 0);
+
+        // Establece el fin de la tasa 
+        EndTasa.setDate(now.getDate() + 1);
+        EndTasa.setHours(17, 0, 0, 0);
     }
-    const fechaExpiracion = new Date(fechaOriginal);
-
-    fechaExpiracion.setDate(fechaExpiracion.getDate() + 1);
-    fechaExpiracion.setHours(18, 0, 0, 0);
-
-    const fechaActual = new Date();
-    return fechaActual.getTime() <= fechaExpiracion.getTime();
+    return (tasa.getTime() >= StartTasa.getTime() && tasa.getTime() <= EndTasa.getTime());
 }
 
 /**
@@ -67,6 +77,7 @@ export default function Main() {
           }
         };
 
+        console.debug('[DEBUG] ', data.fechaActualizacion, isUpdated(data.fechaActualizacion));
         if (data.fechaActualizacion.length <= 0 || !isUpdated(data.fechaActualizacion)) {
             fetchData();
         } else {
