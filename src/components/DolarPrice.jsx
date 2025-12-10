@@ -94,7 +94,7 @@ export default function Main() {
     
     if (loading) {
         return (
-            <div className="bg-green-600 rounded-[1rem] px-4 py-3 m-2 text-white flex items-center gap-5">
+            <div className="bg-green-600 rounded-[1rem] px-4 py-3 text-white flex items-center gap-5">
                 <i className="bi bi-currency-dollar text-[2.5rem]"></i>
                 <div className="flex flex-col grow-[1]">
                     <div className="flex flex-row">
@@ -108,7 +108,7 @@ export default function Main() {
     }
 
     return (
-        <div className="bg-green-600 rounded-[1rem] px-4 py-3 m-2 text-white flex items-center gap-5">
+        <div className="bg-green-600 rounded-[1rem] px-4 py-3 text-white flex items-center gap-5">
             <i className="bi bi-currency-dollar text-[2.5rem]"></i>
             <div className="flex flex-col grow-[1]">
                 <div className="flex flex-row leading-[.85rem]">

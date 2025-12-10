@@ -1,4 +1,5 @@
 import DolarPrice from '../components/DolarPrice';
+import BoxI from '../components/BoxInfo';
 
 export default function Home() {
     const commitHash = process.env.REACT_APP_VERSION_ID;
@@ -6,7 +7,18 @@ export default function Home() {
 
     return (
         <div className="flex flex-col gap-1 h-full">
-            <DolarPrice />
+            <div className="flex flex-col px-2">
+                <span class="font-[700] fv-small w-full">Bienvenido de vuelta</span>
+                <DolarPrice />
+            </div>
+            <div class="flex gap-1 w-full justify-center px-2 flex-col">
+                <span class="font-[700] fv-small">Resumen de tus datos</span>            
+                <div className="flex flex-row gap-1">
+                    <BoxI title="Clientes"  text={String(Math.floor(Math.random() * 1000))} bgColor="blue-500 w-1/2" textColor="white" />
+                    <BoxI title="Productos" text={String(Math.floor(Math.random() * 1000))} bgColor="gray-200 w-1/2"/>
+                </div>
+                <BoxI title="Ordenes" text={String(Math.floor(Math.random() * 1000))} bgColor="green-200 w-full"/>
+            </div>
             {version}
         </div>
     );
