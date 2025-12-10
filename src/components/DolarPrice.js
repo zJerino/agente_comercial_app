@@ -77,7 +77,6 @@ export default function Main() {
           }
         };
 
-        console.debug('[DEBUG] ', data.fechaActualizacion, isUpdated(data.fechaActualizacion));
         if (data.fechaActualizacion.length <= 0 || !isUpdated(data.fechaActualizacion)) {
             fetchData();
         } else {
