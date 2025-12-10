@@ -1,24 +1,22 @@
 import { Link, useOutletContext } from 'react-router';
-import { useLocalStorage } from "react-use";
-import { schema as clientSchema, dbName as clientDB } from '../../configs/clients';
-import { tryParseJSON } from '../../configs/utils';
+import { schema as clientSchema } from '../../configs/clients';
+import { useClientModel } from '../../models/clients';
 
 export default function Main() {
     const { searchVal } = useOutletContext();
-    const [value] = useLocalStorage(clientDB, "[]");
-    const data = tryParseJSON(value) || [];
-
+    const { searchList, getAll } = useClientModel();
+    let list = [];
+    
     /**
-     * Genera la lista de enlaces para ver cada cliente
+     * Se genera la lista acorde a si se esta buscando algun cliente o se quiere ver todos
      */
-    let list = data.filter((item) => {
-        if (!searchVal || String(searchVal).trim().length === 0) return true;
+    if (!searchVal || String(searchVal).trim().length === 0) {
+        list = getAll();
+    } else {
+        list = searchList(searchVal);        
+    }
 
-        const nameLower = item.fullname.toLowerCase();
-        const searchLower = String(searchVal).toLowerCase();
-
-        return nameLower.includes(searchLower);
-    }).map((item, i) => {
+    list = list.map((item, i) => {
         item = Object.assign({...clientSchema}, item);
 
         if (item.businessImg.length < 1) {

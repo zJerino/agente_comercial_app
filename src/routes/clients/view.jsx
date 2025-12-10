@@ -1,30 +1,35 @@
 import { useParams, useNavigate } from 'react-router';
-import { useLocalStorage } from "react-use";
-import { schema as clientSchema, dbName as clientDB } from '../../configs/clients';
-import { tryParseJSON } from '../../configs/utils';
+import { useState } from "react";
+import { useClientModel } from '../../models/clients';
 
 export default function Main() {
     const { id } = useParams();
-    const [value, setValue] = useLocalStorage(clientDB, "[]");
+    const [isDeleted, setDelete] = useState(false);
     const navigate = useNavigate();
+    const model = useClientModel();
 
-    const data = tryParseJSON(value) || [];
-
-    let dataIndex = undefined;
-    const client = data.find((v, index) => {
-        let evaluar = Object.assign({ ...clientSchema }, v).id === id;
-        if (evaluar) {
-            dataIndex = index;
-        }
-        return evaluar;
-    });
+    const client = model.client(id, 'id'); // Obtiene el objeto deseado
 
 
     if (client === undefined) {
-        <div className="flex flex-col justify-center align-center w-[100vw] h-[100svh]">
-            <i className="bi bi-emoji-dizzy-fill text-[4rem] mx-auto mb-3 text-stone-300"></i>
-            <h4 className="mx-auto text-stone-400">El cliente que buscas no existe.</h4>
-        </div>
+        if (isDeleted) {
+            setTimeout(() => {
+                navigate('/clients');
+            }, 5000);
+            return (
+                <div className="flex flex-col justify-center align-center w-full h-full">
+                    <i className="bi bi-person-fill text-[4rem] mx-auto mb-3 text-stone-300"></i>
+                    <h4 className="mx-auto text-stone-400">El cliente fue eliminado.</h4>
+                </div>
+            );
+        } else {
+            return (
+                <div className="flex flex-col justify-center align-center w-full h-full">
+                    <i className="bi bi-emoji-dizzy-fill text-[4rem] mx-auto mb-3 text-stone-300"></i>
+                    <h4 className="mx-auto text-stone-400">El cliente que buscas no existe.</h4>
+                </div>
+            );
+        }
     } else {
         /**
      * Boton de para ir al mapa
@@ -48,11 +53,8 @@ export default function Main() {
          * Funcion para borrar clientes
          */
         const handleDelete = function () {
-            data.splice(dataIndex, 1);
-
-            setValue(JSON.stringify(data));
-
-            setTimeout(() => navigate("/clients"), 5000); // Esperar 5 segundos para redireccion
+            model.delete(id);
+            setDelete(true);
         };
 
         return (

@@ -8,9 +8,9 @@ export default function Main({ bgColor = 'gray-200', textColor = 'black', icon =
                         <span class="font-[700] fv-small">{title}</span>
                     </div>
                 ) : null}
-                {text.length > 0 ? (
+                {String(text).length > 0 ? (
                     <h3 class="text-[1.25rem] font-[500]">
-                        <span>{text}</span>
+                        <span>{String(text)}</span>
                     </h3>
                 ) : null}
             </div>

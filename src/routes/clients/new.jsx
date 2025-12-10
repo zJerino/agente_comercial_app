@@ -1,14 +1,15 @@
 import { useNavigate } from 'react-router';
 import { useState, useEffect } from 'react';
-import { useLocalStorage, useGeolocation } from "react-use";
-import { schema as clientSchema, dbName as clientDB } from '../../configs/clients';
-import { tryParseJSON } from '../../configs/utils';
+import { useClientModel } from '../../models/clients';
+import { useGeolocation } from "react-use";
+import { schema as clientSchema } from '../../configs/clients';
 import { PhoneInput } from 'react-international-phone';
 import 'react-international-phone/style.css';
 
+
 export default function Main() {
-    const [value, setValue] = useLocalStorage(clientDB, "[]");
     const [client, setClient] = useState(clientSchema);
+    const { create } = useClientModel();
     const [imageUploaded, setImageUpload] = useState(false);
     const geoLoca = useGeolocation();
     const navigate = useNavigate();
@@ -23,8 +24,6 @@ export default function Main() {
     }, [geoLoca.loading, geoLoca.latitude, geoLoca.longitude]);
 
     let imgDefault = 'https://placehold.co/100?text=';
-
-    const data = tryParseJSON(value) || [];
 
     /**
      * Maneja la captura de imagen y la convierte a Base64 para guardarla en localStorage.
@@ -55,17 +54,13 @@ export default function Main() {
     const handleSubmit = (event) => {
         event.preventDefault();
 
-        const newClient = {
-            ...client,
-            id: crypto.randomUUID(),
-            businessImg: client.businessImg || "" // Usar la imagen por defecto si no se proporciona
-        };
-      
-        const currentClients = Array.isArray(data) ? data : [];
-
-        const updatedData = [...currentClients, newClient];
-
-        setValue(JSON.stringify(updatedData));
+        /**
+         * En caso de error no redireccionar
+         */
+        if (!create({...client, id: crypto.randomUUID()})) {
+            console.error('[ERROR] No se pudo crear el nuevo cliente');
+            return false;
+        }
 
         navigate('/clients');
     };
