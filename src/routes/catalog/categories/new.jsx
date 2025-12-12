@@ -39,7 +39,7 @@ export default function Main() {
     };
 
     return (
-        <div className="flex flex-col my-3">
+        <div className="flex flex-col min-h-full justify-center py-5">
             <form className="mx-auto flex w-full max-w-md flex-col gap-6" onSubmit={handleSubmit}>
                 <div className="flex flex-col items-center">
                     <h1 className="text-3xl font-semibold">Nueva categoria</h1>
