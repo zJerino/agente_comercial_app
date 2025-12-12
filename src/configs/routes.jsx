@@ -65,13 +65,109 @@ routes.push({
         },
 
         {
-            element: <MainLayout search={true}/>,
+            element: <MainLayout title="Tus clientes" search={true}/>,
             options: {
                 index: true
             },
             children: [
                 {
                     element: <ClientsIndex />,
+                    options: {index: true}
+                }
+            ]
+        }
+    ]
+});
+
+/**
+ * Rutas de catalogo
+ */
+const CatalogIndex = lazy(() => import('../routes/catalog/index'));
+const CatalogNew = lazy(() => import('../routes/catalog/new'));
+
+const ProductNew = lazy(() => import('../routes/catalog/products/new'));
+const ProductView = lazy(() => import('../routes/catalog/products/view'));
+
+const CategoryNew = lazy(() => import('../routes/catalog/categories/new'));
+const CategoryView = lazy(() => import('../routes/catalog/categories/view'));
+const CategoryAdd = lazy(() => import('../routes/catalog/categories/add'));
+
+routes.push({
+    path: '/catalog',
+    element: <Outlet />,
+    options: { index: false },
+    children: [
+        {
+            path: 'new',
+            element: <MainLayout titleType="none" back='/catalog' />,
+            options: {index: false},
+            children: [
+                {
+                    element: <CatalogNew />,
+                    options: {index: true}
+                }
+            ]
+        },
+
+        // Productos
+        {
+            path: 'product/new',
+            element: <FormsLayout title="Nuevo producto" />,
+            options: {index: false},
+            children: [
+                {
+                    element: <ProductNew />,
+                    options: {index: true}
+                }
+            ]
+        },
+        {
+            path: 'product/:id',
+            element: <MainLayout titleType="in-content" back='/catalog' menu={[{ text: 'Borrar', icon: 'trash', modal: 'modal-delete' } ]}/>,
+            children: [
+                {
+                    element: <ProductView />,
+                    options: {index: true}                    
+                }
+            ]
+        },
+
+        // Categorias
+        {
+            path: 'category/new',
+            element: <FormsLayout titleType="none" back='/catalog' />,
+            options: {index: false},
+            children: [
+                {
+                    element: <CategoryNew />,
+                    options: {index: true}
+                }
+            ]
+        },
+        {
+            path: 'category/:id',
+            element: <MainLayout search={true} titleType="center" back='/catalog' />,
+            options: {index: false},
+            children: [
+                {
+                    path: 'add',
+                    element: <CategoryAdd />
+                },
+                {
+                    element: <CategoryView />,
+                    options: {index: true}
+                }
+            ]
+        },
+
+        {
+            element: <MainLayout search={true} title="Tu catalogo" />,
+            options: {
+                index: true
+            },
+            children: [
+                {
+                    element: <CatalogIndex />,
                     options: {index: true}
                 }
             ]

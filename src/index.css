@@ -17,7 +17,7 @@ body {
 }
 
 .text-shadow-custom-topbar {
-  text-shadow: 0 0 grey
+    text-shadow: 0 0 0px #ffffff;
 }
 
 .fv-small {

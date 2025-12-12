@@ -15,6 +15,11 @@ const rutas = [
         'text': 'Orders',
         'icon': 'card-list',
         'to': '/orders'
+    },
+    {
+        'text': 'Catalog',
+        'icon': 'boxes',
+        'to': '/catalog'
     }
 ];
 
