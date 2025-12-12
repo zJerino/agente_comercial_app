@@ -28,7 +28,7 @@ export default function bottomBar({ restSearch }) {
     let activeClass = ' bg-primary/10 text-primary';
     let links = rutas.map((item, i) => {
         return (
-            <NavLink to={item.to} key={i} className={({ isActive }) => isActive ? classes + activeClass : 'text-stone-500 ' + classes } onClick={() => restSearch()}>
+            <NavLink to={item.to} key={i} className={({ isActive }) => isActive ? classes + activeClass : 'text-stone-500 ' + classes } onClick={() => ((typeof restSearch === 'function') ? restSearch() : '')}>
                 <i className={'bi bi-' + item.icon + ' text-[1.5rem]'}></i>
                 <span className="text-[.85rem]">{item.text}</span>
             </NavLink>
