@@ -7,7 +7,7 @@ import Carousel from '../../../components/Carousel';
 export default function Main() {
     const { id } = useParams();
     const [ isDelete, setDelete ] = useState(false);
-    const { searchVal, restSearch, setTitle } = useOutletContext();
+    const { setTitle } = useOutletContext();
 
     const navigate = useNavigate();
     const model = CategoryModel();
