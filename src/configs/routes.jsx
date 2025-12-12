@@ -44,7 +44,7 @@ routes.push({
     children: [
         {
             path: 'new',
-            element: <FormsLayout title="Nuevo cliente" back='/clients' />,
+            element: <FormsLayout back='/clients' />,
             options: {index: false},
             children: [
                 {
@@ -65,7 +65,7 @@ routes.push({
         },
 
         {
-            element: <MainLayout title="Tus clientes" search={true}/>,
+            element: <MainLayout search={true}/>,
             options: {
                 index: true
             },
@@ -112,7 +112,7 @@ routes.push({
         // Productos
         {
             path: 'product/new',
-            element: <FormsLayout title="Nuevo producto" />,
+            element: <FormsLayout />,
             options: {index: false},
             children: [
                 {
@@ -161,7 +161,7 @@ routes.push({
         },
 
         {
-            element: <MainLayout search={true} title="Tu catalogo" />,
+            element: <MainLayout search={true} />,
             options: {
                 index: true
             },

@@ -17,10 +17,10 @@ export const searchSchema = {
 /**
  * Componente | Topbar
  */
-export default function TopBar({ title = 'AgenteComercialApp', titleType = 'normal', back = null, menu = null, search = null }) {
+export default function TopBar({ title, titleType = 'normal', back = null, menu = null, search = null }) {
   const navigate = useNavigate();
   const [ internalState, setInternalState ] = useState(false);
-  const [searchClose, setSearchClose] = (search != null && typeof search === 'object' && Array.isArray(search.state) && search.state.length == 2 && typeof search.state[1] === 'function' ? search.state : [ internalState, setInternalState ]);
+  const [searchClose, setSearchClose] = (search != null && typeof search === 'object' && Array.isArray(search.state) && search.state.length === 2 && typeof search.state[1] === 'function' ? search.state : [ internalState, setInternalState ]);
 
   const BackButton = back ? (<i className="bi bi-chevron-left cursor-pointer transition-colors hover:text-gray-600" onClick={() => navigate(back)} aria-label="Volver a la página anterior" ></i>) : null;
 

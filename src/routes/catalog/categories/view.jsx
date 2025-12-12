@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { useNavigate, useParams, Link } from 'react-router';
+import { useNavigate, useParams, Link, useOutletContext } from 'react-router';
 import { CategoryModel } from '../../../models/products-categories';
 import { ProductsModel } from '../../../models/products';
 import Carousel from '../../../components/Carousel';
@@ -7,11 +7,13 @@ import Carousel from '../../../components/Carousel';
 export default function Main() {
     const { id } = useParams();
     const [ isDelete, setDelete ] = useState(false);
+    const { searchVal, restSearch, setTitle } = useOutletContext();
+
     const navigate = useNavigate();
     const model = CategoryModel();
     const pModel = ProductsModel();
     const category = model.category(id);
-
+    
     /**
      * Aviso de inexistencia
      */
@@ -25,6 +27,9 @@ export default function Main() {
             </div>
         );
     }
+    
+    // Titulo del Topbar
+    setTitle(category.name);
 
     /**
     * Funcion para borrar categorias

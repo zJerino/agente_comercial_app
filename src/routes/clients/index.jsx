@@ -3,9 +3,12 @@ import { schema as clientSchema } from '../../configs/clients';
 import { useClientModel } from '../../models/clients';
 
 export default function Main() {
-    const { searchVal } = useOutletContext();
+    const { searchVal, setTitle } = useOutletContext();
     const { searchList, getAll } = useClientModel();
     let list = [];
+
+    // Titulo del Topbar
+    setTitle('Tus clientes');
     
     /**
      * Se genera la lista acorde a si se esta buscando algun cliente o se quiere ver todos

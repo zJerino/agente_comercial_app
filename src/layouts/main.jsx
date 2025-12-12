@@ -10,7 +10,10 @@ import BottomBar from '../components/BottomBar';
 import { Outlet } from 'react-router';
 import { useState } from 'react';
 
-export default function Main({titleType, title, back, menu, search = false}) {
+let APP_NAME = (typeof process.env.REACT_APP_NAME === 'string' ? process.env.REACT_APP_NAME : 'AgenteComercialApp');
+
+export default function Main({titleType, title = APP_NAME, back, menu, search = false}) {
+    const [titleState, setTitle] = useState(title);
     const [searchVal, setSearchVal] = useState('');
     const [searchState, setSearchState] = useState(false);
 
@@ -30,11 +33,11 @@ export default function Main({titleType, title, back, menu, search = false}) {
     
     return (
         <div className="flex flex-col h-[100svh] z-[120]">
-            {titleType !== 'in-content' ? <TopBar titleType={titleType} back={back} menu={menu} search={searchDef} title={title}/> : ''}
+            {titleType !== 'in-content' ? <TopBar titleType={titleType} back={back} menu={menu} search={searchDef} title={titleState}/> : ''}
 
             <div className="flex-grow-[1] relative overflow-y-auto z-[100]">
-                {titleType === 'in-content' ? <TopBar titleType="none" back={back} menu={menu} search={searchDef} title={title}/> : ''}
-                <Outlet context={{searchVal, searchState, restSearch}} />
+                {titleType === 'in-content' ? <TopBar titleType="none" back={back} menu={menu} search={searchDef} title={titleState}/> : ''}
+                <Outlet context={{searchVal, searchState, restSearch, setTitle}} />
             </div>
             
             <BottomBar restSearch={restSearch} />

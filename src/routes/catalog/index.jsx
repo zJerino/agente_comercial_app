@@ -10,11 +10,14 @@ let imgDefault = 'https://placehold.co/100?text=';
  * Pagina de inicio de las ordenes
  */
 export default function Main() {
-    const { searchVal, restSearch } = useOutletContext();
+    const { searchVal, restSearch, setTitle } = useOutletContext();
     const cModel = CategoryModel();
     const pModel = ProductsModel();
     let products = pModel.getAll();
     let categories = cModel.getAll();
+
+    // Titulo del Topbar
+    setTitle('Catalogo');
 
     /**
      * En caso de busqueda
