@@ -8,7 +8,6 @@ export default function Main({ text = 'Ingresa lo que quieras buscar', onClose =
 
     function handleClose(v) {
         onUpdate('');
-        
         if (typeof onClose == 'function') return onClose(true);
     }
 

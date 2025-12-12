@@ -12,14 +12,20 @@ import { useState } from 'react';
 
 export default function Main({titleType, title, back, menu, search = false}) {
     const [searchVal, setSearchVal] = useState('');
+    const [searchState, setSearchState] = useState(false);
 
     let searchDef = null;
     if (search) {
         searchDef = {
             onchange: (val) => {
                 setSearchVal(val);
-            }
+            },
+            state: [searchState, setSearchState],
         }
+    }
+    function restSearch() {
+        setSearchVal(null);
+        setSearchState(false);
     }
     
     return (
@@ -28,10 +34,10 @@ export default function Main({titleType, title, back, menu, search = false}) {
 
             <div className="flex-grow-[1] relative overflow-y-auto z-[100]">
                 {titleType === 'in-content' ? <TopBar titleType="none" back={back} menu={menu} search={searchDef} title={title}/> : ''}
-                <Outlet context={{searchVal}} />
+                <Outlet context={{searchVal, searchState, restSearch}} />
             </div>
             
-            <BottomBar />
+            <BottomBar restSearch={restSearch} />
         </div>
     );
 }

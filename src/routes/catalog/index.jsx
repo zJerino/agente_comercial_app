@@ -10,7 +10,7 @@ let imgDefault = 'https://placehold.co/100?text=';
  * Pagina de inicio de las ordenes
  */
 export default function Main() {
-    const { searchVal } = useOutletContext();
+    const { searchVal, restSearch } = useOutletContext();
     const cModel = CategoryModel();
     const pModel = ProductsModel();
     let products = pModel.getAll();
@@ -20,13 +20,14 @@ export default function Main() {
      * En caso de busqueda
      */
     if (searchVal && String(searchVal).trim().length > 0) {
+
         let se = String(searchVal).trim().toLowerCase();
 
         let clist = categories.filter(item => item.name.toLowerCase().includes(se)).map((item, i) => {
             item = Object.assign({ ...categorySchema }, item);
 
             return (
-                <Link to={'/catalog/category/' + item.id} key={i} className="flex p-3 border-b-[1px] items-center ">
+                <Link to={'/catalog/category/' + item.id} key={i} className="flex p-3 border-b-[1px] items-center " onClick={() => restSearch()}>
                     <div className="flex flex-col">
                         <span className="text-black-900">
                             {item.name}
@@ -40,7 +41,7 @@ export default function Main() {
             item = Object.assign({ ...productSchema }, item);
 
             return (
-                <Link to={'/catalog/product/' + item.id} key={i} className="flex p-3 border-b-[1px] items-center ">
+                <Link to={'/catalog/product/' + item.id} key={i} className="flex p-3 border-b-[1px] items-center " onClick={() => restSearch()}>
                     <img src={item.images.length > 0 ? item.images[0] : imgDefault + item.name.substr(0, 2)} className="rounded-full me-2 size-[3rem]"  alt="Me at the park."/>
                     <div className="flex flex-col">
                         <span className="text-black-900">

@@ -23,12 +23,12 @@ const rutas = [
     }
 ];
 
-export default function bottomBar() {
+export default function bottomBar({ restSearch }) {
     let classes = "flex flex-col justify-center max-w-[7rem] mx-auto p-1 rounded-full text-center w-full";
     let activeClass = ' bg-primary/10 text-primary';
     let links = rutas.map((item, i) => {
         return (
-            <NavLink to={item.to} key={i} className={({ isActive }) => isActive ? classes + activeClass : 'text-stone-500 ' + classes }>
+            <NavLink to={item.to} key={i} className={({ isActive }) => isActive ? classes + activeClass : 'text-stone-500 ' + classes } onClick={() => restSearch()}>
                 <i className={'bi bi-' + item.icon + ' text-[1.5rem]'}></i>
                 <span className="text-[.85rem]">{item.text}</span>
             </NavLink>

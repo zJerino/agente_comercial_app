@@ -11,6 +11,7 @@ export const searchSchema = {
   text: '',
   icon: 'search',
   onchange: null,
+  state: null
 }
 
 /**
@@ -18,7 +19,8 @@ export const searchSchema = {
  */
 export default function TopBar({ title = 'AgenteComercialApp', titleType = 'normal', back = null, menu = null, search = null }) {
   const navigate = useNavigate();
-  const [searchClose, setSearchClose] = useState(true);
+  const [ internalState, setInternalState ] = useState(false);
+  const [searchClose, setSearchClose] = (search != null && typeof search === 'object' && Array.isArray(search.state) && search.state.length == 2 && typeof search.state[1] === 'function' ? search.state : [ internalState, setInternalState ]);
 
   const BackButton = back ? (<i className="bi bi-chevron-left cursor-pointer transition-colors hover:text-gray-600" onClick={() => navigate(back)} aria-label="Volver a la página anterior" ></i>) : null;
 
@@ -81,7 +83,7 @@ export default function TopBar({ title = 'AgenteComercialApp', titleType = 'norm
           {MenuButton}
         </div>
       </div>
-      {searchBtn ? (<SearchCom onClose={() => setSearchClose(true)} onUpdate={search.onchange} show={!searchClose} />) : ''}
+      {searchBtn ? (<SearchCom onClose={() => setSearchClose(false)} onUpdate={search.onchange} show={searchClose} />) : ''}
     </div>
   );
 }
