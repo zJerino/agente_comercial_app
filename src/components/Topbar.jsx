@@ -20,7 +20,7 @@ export default function TopBar({ title = 'AgenteComercialApp', titleType = 'norm
   const navigate = useNavigate();
   const [searchClose, setSearchClose] = useState(true);
 
-  const BackButton = back ? (<i className="bi bi-chevron-left absolute cursor-pointer transition-colors hover:text-gray-600" onClick={() => navigate(back)} aria-label="Volver a la página anterior" ></i>) : null;
+  const BackButton = back ? (<i className="bi bi-chevron-left cursor-pointer transition-colors hover:text-gray-600" onClick={() => navigate(back)} aria-label="Volver a la página anterior" ></i>) : null;
 
   const MenuButton = Array.isArray(menu) ? (
     <div className="absolute right-[1rem] z-10">
@@ -45,7 +45,7 @@ export default function TopBar({ title = 'AgenteComercialApp', titleType = 'norm
 
   if (titleType === 'none') {
     return (
-      <div className="absolute top-0 left-0 px-3 py-2 w-full z-[120] text-shadow-custom-topbar">
+      <div className="absolute top-0 left-0 p-2 w-full z-[120] text-shadow-custom-topbar">
         <div className="px-2 py-5 flex items-center justify-between">
           {BackButton}
           {MenuButton}
@@ -68,7 +68,7 @@ export default function TopBar({ title = 'AgenteComercialApp', titleType = 'norm
   }
 
   return (
-    <div className="bg-white border-b border-gray-200 shadow-sm px-3 py-2 sticky top-0 z-50">
+    <div className="bg-white border-b border-gray-200 shadow-sm px-3 py-2 relative top-0 z-50">
       <div className={`px-2 py-1 flex items-center ${titleType === 'center' ? 'justify-center' : 'justify-start'}`}>
         <div className="absolute left-0 pl-3">
           {BackButton}
