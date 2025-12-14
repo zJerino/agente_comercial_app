@@ -34,13 +34,27 @@ export default function Main({titleType, title = APP_NAME, back, menu, search = 
         setSearchState(false);
     }
     
+    const TopbarFixed = useMemo(() => {
+        if (titleType !== 'in-content') return <TopBar titleType={titleType} back={back} menu={menu} search={searchDef} title={titleState}/>;
+        return <></>;
+    }, [titleType, back, menu, searchDef, titleState]);
+    
+    const TopbarStatic = useMemo(() => {
+        if (titleType === 'in-content') return <TopBar titleType="none" back={back} menu={menu} search={searchDef} title={titleState}/>;
+        return <></>;
+    }, [titleType, back, menu, searchDef, titleState]);
+
+    
+    const Content = useMemo(() => <Outlet context={{searchVal, searchState, restSearch, setTitle}} />, [searchVal, searchState]);
+
     return (
         <div className="flex flex-col h-[100svh] z-[120]">
-            {titleType !== 'in-content' ? <TopBar titleType={titleType} back={back} menu={menu} search={searchDef} title={titleState}/> : ''}
+            {TopbarFixed}
 
             <div className="flex-grow-[1] relative overflow-y-auto z-[100]">
-                {titleType === 'in-content' ? <TopBar titleType="none" back={back} menu={menu} search={searchDef} title={titleState}/> : ''}
-                <Outlet context={{searchVal, searchState, restSearch, setTitle}} />
+                {TopbarStatic}
+
+                {Content}
             </div>
             
             <BottomBar restSearch={restSearch} />

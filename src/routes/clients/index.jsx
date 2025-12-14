@@ -1,3 +1,4 @@
+import {useEffect} from 'react';
 import { Link, useOutletContext } from 'react-router';
 import { schema as clientSchema } from '../../configs/clients';
 import { useClientModel } from '../../models/clients';
@@ -8,8 +9,10 @@ export default function Main() {
     let list = [];
 
     // Titulo del Topbar
-    setTitle('Tus clientes');
-    
+    useEffect(() => {
+        setTitle('Tus clientes');
+    }, [setTitle]);
+
     /**
      * Se genera la lista acorde a si se esta buscando algun cliente o se quiere ver todos
      */
