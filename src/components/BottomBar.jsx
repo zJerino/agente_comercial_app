@@ -29,7 +29,7 @@ export default function BottomBar({ restSearch }) {
     const activeClass = 'bg-primary/10 text-primary';
 
     const links = useMemo(() => {
-        let r = (typeof restSearch === 'function') ? restSearch() : (() => {});
+        let r = (typeof restSearch === 'function') ? restSearch : (() => {});
 
         return rutas.map((item, i) => (
             <NavLink to={item.to}  key={i} onClick={r}
