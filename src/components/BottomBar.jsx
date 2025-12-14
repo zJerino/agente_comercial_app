@@ -1,4 +1,5 @@
 import { NavLink } from 'react-router';
+import { useMemo } from 'react';
 
 const rutas = [
     {
@@ -23,17 +24,23 @@ const rutas = [
     }
 ];
 
-export default function bottomBar({ restSearch }) {
-    let classes = "flex flex-col justify-center max-w-[7rem] mx-auto p-1 rounded-full text-center w-full";
-    let activeClass = ' bg-primary/10 text-primary';
-    let links = rutas.map((item, i) => {
-        return (
-            <NavLink to={item.to} key={i} className={({ isActive }) => isActive ? classes + activeClass : 'text-stone-500 ' + classes } onClick={() => ((typeof restSearch === 'function') ? restSearch() : '')}>
+export default function BottomBar({ restSearch }) {
+    const classes = " flex flex-col justify-center max-w-[7rem] mx-auto p-1 rounded-full text-center w-full transition-colors duration-[.4s]";
+    const activeClass = 'bg-primary/10 text-primary';
+
+    const links = useMemo(() => {
+        let r = (typeof restSearch === 'function') ? restSearch() : (() => {});
+
+        return rutas.map((item, i) => (
+            <NavLink to={item.to}  key={i} onClick={r}
+                className={({ isActive }) => (isActive ? activeClass : 'text-stone-500 hover:bg-gray-100 bg-transparent') + classes } 
+            >
                 <i className={'bi bi-' + item.icon + ' text-[1.5rem]'}></i>
                 <span className="text-[.85rem]">{item.text}</span>
             </NavLink>
-        );
-    });
+        ));
+    }, [restSearch]);
+
     return (
         <div className="border-t-[1px] px-3 py-1">
             <div className="flex">

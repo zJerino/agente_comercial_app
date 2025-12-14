@@ -8,7 +8,7 @@
 import TopBar from '../components/Topbar';
 import BottomBar from '../components/BottomBar';
 import { Outlet } from 'react-router';
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 
 let APP_NAME = (typeof process.env.REACT_APP_NAME === 'string' ? process.env.REACT_APP_NAME : 'AgenteComercialApp');
 
@@ -16,16 +16,19 @@ export default function Main({titleType, title = APP_NAME, back, menu, search = 
     const [titleState, setTitle] = useState(title);
     const [searchVal, setSearchVal] = useState('');
     const [searchState, setSearchState] = useState(false);
-
-    let searchDef = null;
-    if (search) {
-        searchDef = {
-            onchange: (val) => {
-                setSearchVal(val);
-            },
-            state: [searchState, setSearchState],
+    
+    const searchDef = useMemo(() => {
+        if (search) {
+            return {
+                onchange: (val) => {
+                    setSearchVal(val);
+                },
+                state: [searchState, setSearchState],
+            }
         }
-    }
+        return null;
+    }, [search, searchState, setSearchVal, setSearchState]);
+
     function restSearch() {
         setSearchVal(null);
         setSearchState(false);

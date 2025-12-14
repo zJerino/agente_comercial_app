@@ -1,6 +1,7 @@
-import { Suspense } from 'react';
+import { Suspense, useMemo } from 'react';
 import { Routes, Route } from "react-router";
 import RoutesList from './configs/routes';
+import { LoaderFull } from './components/Loading';
 
 /**
  * Esquema de como debe definirse las rutas en la configuracion de rutas
@@ -15,64 +16,60 @@ const routesSchema = {
 };
 
 /**
- * Resuelve y devuelve los hijos de las rutas
+ * Resuelve y devuelve los hijos de las rutas de forma recursiva.
  */
 function children(oitem) {
-  let item = {...routesSchema};
-  Object.assign(item, oitem);
+  let item = {...routesSchema, ...oitem};
 
+  // Mapear los hijos recursivamente
   let Childs = item.children.map((Child) => {
     Child = Object.assign({...routesSchema}, Child);
+
+    // Llamada recursiva para rutas anidadas
     if (Child.children.length > 0) {
       return children(Child);
     } else {
-      if (Child.options.index === 1) {
-        return (<Route element={Child.element} index/>);
+      if (Child.options.index === true) {
+        return (<Route element={Child.element} index key={Child.path || 'index'}/>); // Añadimos key
       } else {
-        return (<Route path={Child.path} element={Child.element} />);        
+        return (<Route path={Child.path} element={Child.element} key={Child.path} />); // Añadimos key
       }
     }
   })
-  
+
   if (item.path.length > 0) {
     return (
-      <Route path={item.path} element={item.element}>
+      <Route path={item.path} element={item.element} key={item.path}>
         {Childs}
       </Route>
     );
   } else {
     return (
-      <Route element={item.element}>
+      <Route element={item.element} key={item.path || 'layout'}>
         {Childs}
       </Route>
     );
   }
 }
 
-function Loading() {
-  return (
-    <div className="absolute w-[100vw] h-[100svh] flex flex-col justify-center items-center gap-[1rem] bg-gray-200 bg-opacity-25">
-      <h5 className="text-black-500">Cargando</h5>
-      <svg className="spinner-ring" viewBox="25 25 50 50" strokeWidth="5">
-        <circle cx="50" cy="50" r="20" />
-      </svg>
-    </div>
-  );
-}
-
+/**
+ * Componente princial de la App
+ */
 function App() {
-  let Rou = RoutesList.map((R) => {
-    if (R.children.length > 0) {
-      return children(R);
-    } else if (R.options.index === 1) {
-      return <Route index element={R.element} />      
-    } else {
-      return <Route path={R.path} element={R.element} />      
-    }
-  })
+  const Rou = useMemo(() => {
+    return RoutesList.map((R) => {
+      if (R.children.length > 0) {
+        return children(R);
+      } else if (R.options.index === true) {
+        return <Route index element={R.element} key={R.path || 'top-index'}/>      
+      } else {
+        return <Route path={R.path} element={R.element} key={R.path} />      
+      }
+    });
+  }, []);
   
   return (
-    <Suspense fallback={<Loading />}>
+    <Suspense fallback={<LoaderFull />}>
       <Routes>
         {Rou}
       </Routes>
