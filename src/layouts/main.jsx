@@ -31,7 +31,7 @@ export default function Main({titleType, title = APP_NAME, back, menu, search = 
     }, [search, searchState]);
 
     function restSearch() {
-        setSearchVal(null);
+        setSearchVal('');
         setSearchState(false);
     }
     
@@ -57,7 +57,7 @@ export default function Main({titleType, title = APP_NAME, back, menu, search = 
                 {Content}
             </div>
             
-            <BottomBar restSearch={restSearch} />
+            <BottomBar restSearch={restSearch} search={searchVal} />
         </div>
     );
 }
