@@ -1,7 +1,6 @@
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import { useNavigate } from 'react-router';
-import { schema as productSchema } from '../../../configs/products';
-import { ProductsModel } from '../../../models/products';
+import { Create, ProductSchema } from '../../../models/catalog/product';
 import Camera from '../../../components/Base64Camera';
 
 
@@ -72,9 +71,9 @@ const ProductImageItem = ({ img, imageDeleteHandler, k }) => {
 };
 
 export default function Main() {    
-    const [value, setValue] = useState(productSchema);
+    const [value, setValue] = useState(ProductSchema);
+    const [firstImage, setFirstImage] = useState('');
     const navigate = useNavigate();
-    const { create } = ProductsModel();
 
 
     /**
@@ -86,14 +85,14 @@ export default function Main() {
         /**
          * En caso de error no redireccionar
          */
-        let ob = { ...value, id: crypto.randomUUID() };
-        if (!create(ob)) {
+        let ob = { ...value};
+        if (!Create(ob)) {
             console.error('[ERROR] No se pudo crear el nuevo producto');
             return false;
         }
 
         // Navegar a la página del nuevo producto
-        navigate('/catalog/product/' + ob.id);
+        navigate('/catalog/');
     };
 
     /**
@@ -112,10 +111,10 @@ export default function Main() {
     /**
      * Maneja las imagenes agregadas
      */
-    const handleCamera = (image64) => {
+    const handleCamera = (arrayInfo) => {
         setValue((data) => ({
             ...data,
-            images: [...data.images, image64]
+            images: [...data.images, arrayInfo]
         }));
     };
 
@@ -135,16 +134,26 @@ export default function Main() {
     /**
      * Mapeo de imagenes
      */
-    const Images = value.images.map((img, key) => (
-        <ProductImageItem key={key} k={key} img={img} imageDeleteHandler={handleImageDelete(img)} />
-    ));
+    const Images = useMemo(() => {
+        return value.images.map((img, key) => {
+            let imgSrc = img;
+            if (Array.isArray(img) && img.length === 2 && typeof img[1] === 'object' && img[1].constructor.name === 'ArrayBuffer') {
+                let newBlob = new Blob([img[1]], {type: img[0]});
+                imgSrc = URL.createObjectURL(newBlob);
+    
+                if (firstImage === '') setFirstImage(imgSrc);
+            }
+            return <ProductImageItem key={key} k={key} img={imgSrc} imageDeleteHandler={handleImageDelete(img)} />
+        });
+    // eslint-disable-next-line
+    }, [value.images]);
 
     return (
         <div className="flex flex-col min-h-full justify-center py-5">
             <form className="mx-auto flex w-full max-w-md flex-col gap-6" onSubmit={handleSubmit}>
                 <div className="flex flex-col items-center">
                     <label htmlFor="camIn" className=" mb-2">
-                        <img className="rounded-full size-[7rem] mx-auto border-[1px]" src={value.images.length > 0 ? value.images[0] : 'https://placehold.co/100?text=New'} alt="Me at the park."/>
+                        <img className="rounded-full size-[7rem] mx-auto border-[1px]" src={value.images.length > 0 && firstImage !== '' ? firstImage : 'https://placehold.co/100?text=New'} alt="Me at the park."/>
                     </label>
                     <h1 className="text-3xl font-semibold">Nuevo producto</h1>
                     <p className="text-sm">Agrega la informacion de tu nuevo producto</p>

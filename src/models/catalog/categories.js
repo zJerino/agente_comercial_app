@@ -2,14 +2,14 @@
  * Modelo para manejar varios clientes (Prototipo)
  */
 import { useEffect, useState } from 'react';
-import { DBInstance as DB } from '../classes/database';
-import { schema, dbName } from '../configs/clients';
+import { DBInstance as DB } from '../../classes/database';
+import { schema, dbName } from '../../configs/catalog_categories';
 
 /**
  * Esquema de los datos
  */
 export const ClientSchema = {
-    businessImg: '',
+    images: [],
     ...schema
 };
 
@@ -66,11 +66,12 @@ export default function Main() {
                 DB.search(dbName, fn).then(res => {
                     if (Array.isArray(res)) {
                         return r(res.map((item) => {
-                            if (Array.isArray(item.businessImg) && item.businessImg.length === 2 && typeof item.businessImg[1] === 'object' && item.businessImg[1].constructor.name === 'ArrayBuffer') {
+                            /* if (Array.isArray(item.images) && item..length === 2 && typeof item.businessImg[1] === 'object' && item.businessImg[1].constructor.name === 'ArrayBuffer') {
+
                                 let newBlob = new Blob([item.businessImg[1]], {type: item.businessImg[0]});
                                 
                                 item.businessImg = URL.createObjectURL(newBlob);
-                            }
+                            } */
                             return item;
                         }));
                     } else {

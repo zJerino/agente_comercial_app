@@ -22,7 +22,7 @@ export default function Dropdown({ items = [], title = <i className="bi bi-three
                 );
             } else {
                 return (
-                    <Link key={index} className="dropdown-item text-sm flex-row gap-1">
+                    <Link key={index} className="dropdown-item text-sm flex-row gap-1" to={item.link}>
                         {item.icon.length > 0 ? <i className={'bi bi-' + item.icon}></i> : ''} <span>{item.text}</span>
                     </Link>
                 );

@@ -1,17 +1,53 @@
+import { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router';
-import { CategoryModel } from '../../../models/products-categories';
-import { ProductsModel } from '../../../models/products';
+import Model, { Update } from '../../../models/catalog/category';
+import { getAll } from '../../../models/catalog/product';
+import { LoaderInContent } from '../../../components/Loading';
 
 export default function Main() {
     const { id } = useParams();
-    const model = CategoryModel();
-    const pModel = ProductsModel();
-    const category = model.category(id);
+    const [ category, setCategory ] = useState(null);
+    const [ products, setProducts ] = useState(null);
+    const [ loading, setLoading ] = useState(true); // Estado de carga. Por defecto es verdadero
 
     /**
-     * Aviso de inexistencia
+     * Obtener Categoria
      */
-    if (category === undefined) {
+    useEffect(() => {
+        let model = Model(id);
+        model.promise.then((c) => {
+            setCategory(c);
+            
+            /**
+             * Busqueda de los productos
+             */
+            getAll().then((items) => {
+                if (Array.isArray(items) && items.length > 0) {
+                    return setProducts(items);
+                }
+                return setProducts([]);
+            }).catch(() => setProducts([]));
+
+            setLoading(false); // Estado de carga
+        }).catch(() => {
+            setLoading(false);
+        });
+    }, [id]);
+
+    /**
+     * Pantalla de carga
+     */
+    if (loading) {
+        return (
+            <LoaderInContent sub="Cargando categoria" />
+        );
+    }
+    
+    /**
+     * Aviso de inexistencia
+     * Para mas tarde: Cambiar esto por un CenterInfo
+     */
+    if (category === null) {
         return (
             <div className="flex flex-col justify-center align-center w-full h-full">
                 <i className="bi bi-emoji-dizzy-fill text-[4rem] mx-auto mb-3 text-stone-300"></i>
@@ -26,14 +62,35 @@ export default function Main() {
     function handleClick(event) {
         const { name, checked } = event.target;
 
-        if (checked) return model.addProduct(id, name);
-        return model.removeProduct(id, name);
-    }
+        let addp = [...category.products, (!isNaN(Number(name)) ? Number(name) : name)];
+        // eslint-disable-next-line 
+        let delp = (category.products.filter((oit) => oit != name));
 
+        if (checked) return Update(Number(id), {
+            products: addp
+        }).then(() => {
+            category.products = addp;
+            if (event.target.checked) event.target.checked = false;
+        });
+        
+        return Update(Number(id), {
+            products: delp
+        }).then(() => {
+            category.products = delp;            
+            if (!event.target.checked) {
+                event.target.checked = true;
+            }
+        });
+    }
+    
     /**
-     * Obtiene los productos (En caso de ser busqueda solo los que coincidan)
+     * Pantalla de carga
      */
-    const products = pModel.getAll();
+    if (products === null) {
+        return (
+            <LoaderInContent sub="Cargando productos" />
+        );
+    }
 
     let productList = [];
 
@@ -49,8 +106,13 @@ export default function Main() {
         ...products.map((item, key) => {
             let checkIn = <input type="checkbox" className="checkbox ms-auto" name={item.id} id={'product-' + key} onChange={handleClick} />;
     
-            if (category.products.includes(item.id)) {
-                checkIn = <input type="checkbox" className="checkbox ms-auto" name={item.id} id={'product-' + key} onChange={handleClick} checked={true} />
+            // eslint-disable-next-line 
+            if (category.products.some((el) => el == item.id)) {
+                checkIn = <input type="checkbox" className="checkbox ms-auto" name={item.id} id={'product-' + key} onChange={handleClick} checked/>
+            }
+
+            if (Array.isArray(item.images[0]) && typeof item.images[0][1] === 'object' && item.images[0][1].constructor.name === 'ArrayBuffer') {
+                item.images[0] = URL.createObjectURL(new Blob([item.images[0][1]], {type: item.images[0][0]}));
             }
     
             return (

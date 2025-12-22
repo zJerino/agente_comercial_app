@@ -6,6 +6,8 @@ import FormsLayout from '../layouts/forms';
 import Home from '../routes/home';
 import NoFound from '../routes/404';
 
+const OutletWrapper = () => <Outlet />; 
+
 /**
  * Contenedor de rutas
  */
@@ -17,12 +19,12 @@ const routes = [];
 
 routes.push({
     path: '/',
-    element: <MainLayout />,
+    element: MainLayout,
     options: { index: false },
     children: [
         {
             path: '/',
-            element: <Home />,
+            element: Home,
             options: {
                 index: true
             }
@@ -39,39 +41,40 @@ const ClientsView = lazy(() => import('../routes/clients/view'));
 
 routes.push({
     path: '/clients',
-    element: <Outlet />,
+    element: OutletWrapper,
     options: { index: false },
     children: [
         {
             path: 'new',
-            element: <FormsLayout back='/clients' />,
-            options: {index: false},
+            element: MainLayout,
+            props: { back: '/clients', titleType: 'in-content' },
             children: [
                 {
-                    element: <ClientsNew />,
+                    element: ClientsNew,
                     options: {index: true}
                 }
             ]
         },
         {
             path: ':id',
-            element: <MainLayout titleType="none" back='/clients' menu={[{ text: 'Borrar cliente', icon: 'trash', modal: 'modal-delete' } ]}/>,
+            element: MainLayout,
+            props: { titleType: "none", back: '/clients', menu: [{ text: 'Borrar cliente', icon: 'trash', modal: 'modal-delete' } ]},
             children: [
                 {
                     path: 'overview',
-                    element: <ClientsView />
+                    element: ClientsView
                 }
             ]
         },
-
         {
-            element: <MainLayout search={true}/>,
+            element: MainLayout,
+            props: { search: true },
             options: {
                 index: true
             },
             children: [
                 {
-                    element: <ClientsIndex />,
+                    element: ClientsIndex,
                     options: {index: true}
                 }
             ]
@@ -94,80 +97,84 @@ const CategoryAdd = lazy(() => import('../routes/catalog/categories/add'));
 
 routes.push({
     path: '/catalog',
-    element: <Outlet />,
+    element: OutletWrapper,
     options: { index: false },
     children: [
         {
             path: 'new',
-            element: <MainLayout titleType="none" back='/catalog' />,
+            element: MainLayout,
+            props: { titleType: "none", back: '/catalog' },
             options: {index: false},
             children: [
                 {
-                    element: <CatalogNew />,
+                    element: CatalogNew,
                     options: {index: true}
                 }
             ]
         },
 
-        // Productos
+        
         {
             path: 'product/new',
-            element: <FormsLayout />,
+            element: FormsLayout,
             options: {index: false},
             children: [
                 {
-                    element: <ProductNew />,
+                    element: ProductNew,
                     options: {index: true}
                 }
             ]
         },
         {
             path: 'product/:id',
-            element: <MainLayout titleType="in-content" back='/catalog' menu={[{ text: 'Borrar', icon: 'trash', modal: 'modal-delete' } ]}/>,
+            element: MainLayout,
+            props: { titleType: "in-content", back: '/catalog', menu: [{ text: 'Borrar', icon: 'trash', modal: 'modal-delete' } ]},
             children: [
                 {
-                    element: <ProductView />,
+                    element: ProductView,
                     options: {index: true}                    
                 }
             ]
         },
-
-        // Categorias
+        
         {
             path: 'category/new',
-            element: <FormsLayout titleType="none" back='/catalog' />,
+            element: FormsLayout, 
+            props: { titleType: "none", back: '/catalog' },
             options: {index: false},
             children: [
                 {
-                    element: <CategoryNew />,
+                    element: CategoryNew,
                     options: {index: true}
                 }
             ]
         },
         {
             path: 'category/:id',
-            element: <MainLayout search={true} titleType="center" back='/catalog' />,
+            element: MainLayout, 
+            props: { search: true, titleType: "center", back: '/catalog', menu: [{ text: 'Agregar producto', icon: 'plus', link: './add' }, { text: 'Borrar', icon: 'trash', modal: 'modal-delete' }]},
             options: {index: false},
             children: [
                 {
                     path: 'add',
-                    element: <CategoryAdd />
+                    element: CategoryAdd
                 },
                 {
-                    element: <CategoryView />,
+                    element: CategoryView,
                     options: {index: true}
                 }
             ]
         },
 
         {
-            element: <MainLayout search={true} />,
+            element: MainLayout,
+            props: { search: true },
             options: {
                 index: true
             },
             children: [
                 {
-                    element: <CatalogIndex />,
+                    element: CatalogIndex,
                     options: {index: true}
                 }
             ]
@@ -180,7 +187,7 @@ routes.push({
  */
 routes.push({
     path: '*',
-    element: <NoFound />,
+    element: NoFound,
     options: { index: false },
     children: []
 });

@@ -1,12 +1,11 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router';
-import { schema as categorySchema } from '../../../configs/productCategory';
-import { CategoryModel } from '../../../models/products-categories';
+import { schema as categorySchema } from '../../../configs/catalog_categories';
+import { Create } from '../../../models/catalog/category';
 
 export default function Main() {
     const [value, setValue] = useState(categorySchema);
     const navigate = useNavigate();
-    const { create } = CategoryModel();
 
     /**
      * Maneja el guardado del cliente en localStorage
@@ -17,13 +16,12 @@ export default function Main() {
         /**
          * En caso de error no redireccionar
          */
-        let ob = {...value, id: crypto.randomUUID()};
-        if (!create(ob)) {
+        if (!Create(value)) {
             console.error('[ERROR] No se pudo crear el nuevo cliente');
             return false;
         }
 
-        navigate('/catalog/category/' + ob.id);
+        navigate('/catalog');
     };
     
     /**

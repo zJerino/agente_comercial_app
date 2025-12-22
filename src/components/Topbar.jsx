@@ -33,11 +33,12 @@ export default function TopBar({ title, titleType = 'normal', back = null, menu 
   ) : null, [back, navigate]);
 
   const MenuButton = useMemo(() => Array.isArray(menu) ? (
-    <div className="absolute right-[1rem] z-10">
+    <div className={(titleType === 'none' ? "absolute right-[1rem] " : '') + ' z-120'}>
       <Suspense fallback={<i className="bi bi-three-dots"></i>}>
         <Dropdown items={menu} btnclass="text-shadow-custom-topbar text-black" />
       </Suspense>
     </div>
+  // eslint-disable-next-line
   ) : null, [menu]);
 
   let titleStyleClasses = "font-semibold text-primary text-2xl";
@@ -45,7 +46,7 @@ export default function TopBar({ title, titleType = 'normal', back = null, menu 
   if (titleType === 'center') {
     titleStyleClasses = "font-semibold text-black text-xl text-center flex-grow";
   }
-
+ 
   const TitleElement = titleType !== 'none' ? (
     <h4 className={titleStyleClasses}>{title}</h4>
   ) : null;
@@ -92,7 +93,7 @@ export default function TopBar({ title, titleType = 'normal', back = null, menu 
   }
 
   return (
-    <div className="bg-white border-b border-gray-200 shadow-sm px-3 py-2 relative top-0 z-50">
+    <div className="bg-white border-b border-gray-200 shadow-sm px-3 py-2 relative top-0 z-[120]">
       <div className={`px-2 py-1 flex items-center ${titleType === 'center' ? 'justify-center' : 'justify-start'}`}>
         <div className="absolute left-0 pl-3">
           {BackButton}
@@ -100,7 +101,7 @@ export default function TopBar({ title, titleType = 'normal', back = null, menu 
 
         {TitleElement}
 
-        <div className="absolute right-0 pr-3">
+        <div className="absolute flex gap-3 right-0 pr-3">
           {searchBtn}
           {MenuButton}
         </div>

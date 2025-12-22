@@ -12,7 +12,7 @@ import { useState, useMemo } from 'react';
 
 let APP_NAME = (typeof process.env.REACT_APP_NAME === 'string' ? process.env.REACT_APP_NAME : 'AgenteComercialApp');
 
-export default function Main({titleType, title = APP_NAME, back, menu, search = false}) {
+export default function Main({titleType, title = APP_NAME, back, menu, search = false, database}) {
     const [titleState, setTitle] = useState(title);
     const [searchVal, setSearchVal] = useState('');
     const [searchState, setSearchState] = useState(false);
@@ -27,7 +27,8 @@ export default function Main({titleType, title = APP_NAME, back, menu, search = 
             }
         }
         return null;
-    }, [search, searchState, setSearchVal, setSearchState]);
+    // eslint-disable-next-line
+    }, [search, searchState]);
 
     function restSearch() {
         setSearchVal(null);
@@ -44,7 +45,6 @@ export default function Main({titleType, title = APP_NAME, back, menu, search = 
         return <></>;
     }, [titleType, back, menu, searchDef, titleState]);
 
-    
     const Content = useMemo(() => <Outlet context={{searchVal, searchState, restSearch, setTitle}} />, [searchVal, searchState]);
 
     return (

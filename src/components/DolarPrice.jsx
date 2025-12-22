@@ -5,7 +5,7 @@ import DolarModel from '../models/dolar';
  * Esto es un componente que indica el precio del dolar (Venezuela)
  */
 export default function Main() {
-    const { price, isLoading, lastUpdate } = DolarModel();
+    const { price, isLoading, lastUpdate, error } = DolarModel();
     // eslint-disable-next-line
     const [state, copyToClipboard] = useCopyToClipboard();
 
@@ -17,7 +17,11 @@ export default function Main() {
     if (!isLoading && lastUpdate) {
         status = `Ultima actualizacion: ${lastUpdate.toLocaleDateString()} ${lastUpdate.getHours()}:${lastUpdate.getMinutes()}`;
     }
-    
+
+    if (error) {
+        return;
+    }
+
     if (isLoading) {
         return (
             <div className="bg-green-600 rounded-[1rem] px-4 py-3 text-white flex items-center gap-5">

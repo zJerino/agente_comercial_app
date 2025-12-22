@@ -15,9 +15,9 @@ export default function Base64Camera({ onCapture, children, capture = false, inp
         const reader = new FileReader();
 
         reader.onloadend = () => {
-            const base64String = reader.result;
+            const buff = reader.result;
             if (onCapture) {
-                onCapture(base64String);
+                onCapture([file.type, buff]);
             }
             setIsProcessing(false);
         };
@@ -28,7 +28,7 @@ export default function Base64Camera({ onCapture, children, capture = false, inp
         };
 
         // Convierte el archivo a Data URL (Base64)
-        reader.readAsDataURL(file);
+        reader.readAsArrayBuffer(file);
     };
 
     const handleFileChange = (event) => {

@@ -1,39 +1,38 @@
-import { useParams, useNavigate } from 'react-router';
-import { useState } from "react";
-import { useClientModel } from '../../models/clients';
+import { useParams } from 'react-router';
+import { useState, useEffect } from "react";
+import { LoaderInContent } from '../../components/Loading';
+import CenterInfo from '../../components/CenterInfo';
+import Client from '../../models/client';
 
 export default function Main() {
     const { id } = useParams();
-    const [isDeleted, setDelete] = useState(false);
-    const navigate = useNavigate();
-    const model = useClientModel();
+    const [client, setClient] = useState(null);
+    const [loading, setLoading] = useState(true);
 
-    const client = model.client(id, 'id'); // Obtiene el objeto deseado
-
-
-    if (client === undefined) {
-        if (isDeleted) {
-            setTimeout(() => {
-                navigate('/clients');
-            }, 5000);
-            return (
-                <div className="flex flex-col justify-center align-center w-full h-full">
-                    <i className="bi bi-person-fill text-[4rem] mx-auto mb-3 text-stone-300"></i>
-                    <h4 className="mx-auto text-stone-400">El cliente fue eliminado.</h4>
-                </div>
-            );
-        } else {
-            return (
-                <div className="flex flex-col justify-center align-center w-full h-full">
-                    <i className="bi bi-emoji-dizzy-fill text-[4rem] mx-auto mb-3 text-stone-300"></i>
-                    <h4 className="mx-auto text-stone-400">El cliente que buscas no existe.</h4>
-                </div>
-            );
-        }
-    } else {
-        /**
-     * Boton de para ir al mapa
+    /**
+     * Obtener cliente
      */
+    useEffect(() => {
+        let model = Client(id);
+        model.promise.then((c) => {
+            setClient(c);
+            setLoading(false);
+        }).catch(() => {
+            setLoading(false);            
+        });
+    }, [id])
+
+    /**
+     * Pantalla de carga
+     */
+    if (loading) {
+        return (
+            <LoaderInContent />
+        );
+    } else if (typeof client === 'object') {
+        /**
+        * Boton de para ir al mapa
+        */
         let mapLink = null;
         let coords = client.businessGeo.split(' ');
 
@@ -53,8 +52,7 @@ export default function Main() {
          * Funcion para borrar clientes
          */
         const handleDelete = function () {
-            model.delete(id);
-            setDelete(true);
+
         };
 
         return (
@@ -67,11 +65,11 @@ export default function Main() {
                             <p className="text-sm">{client.businessName}</p>
                         </div>
                         <div className="flex flex-col items-center gap-2 mx-2">
-                            <a class="btn btn-solid-primary btn-block justify-start text-start" href={'tel://' + client.contactNumber}>
+                            <a className="btn btn-solid-primary btn-block justify-start text-start" href={'tel://' + client.contactNumber}>
                                 <i className="bi bi-telephone me-2"></i> Llamar
                             </a>
-                            {mapLink != null ? (<a class="btn btn-solid-primary btn-block justify-start text-start" href={mapLink} rel="noreferrer" target="_blank"> <i className="bi bi-geo-alt text-[1rem] me-2"></i> Ver mapa </a>) : ''}
-                            {wsLink != null ? (<a class="btn btn-solid-success btn-block justify-start text-start" href={wsLink} rel="noreferrer" target="_blank"><i className="bi bi-whatsapp me-2"></i> Ir a WhatsApp</a>) : ''}
+                            {mapLink != null ? (<a className="btn btn-solid-primary btn-block justify-start text-start" href={mapLink} rel="noreferrer" target="_blank"> <i className="bi bi-geo-alt text-[1rem] me-2"></i> Ver mapa </a>) : ''}
+                            {wsLink != null ? (<a className="btn btn-solid-success btn-block justify-start text-start" href={wsLink} rel="noreferrer" target="_blank"><i className="bi bi-whatsapp me-2"></i> Ir a WhatsApp</a>) : ''}
                         </div>
                     </div>
                 </div>
@@ -91,5 +89,9 @@ export default function Main() {
                 </div>
             </>
         );
+    } else {
+        return (
+            <CenterInfo text="Cliente no encontrado" sub="El cliente que buscas no existe" icon="x-circle" />
+        )
     }
 }

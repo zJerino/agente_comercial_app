@@ -1,66 +1,92 @@
-import {useEffect} from 'react';
+import { useEffect, useMemo } from 'react';
 import { Link, useOutletContext } from 'react-router';
-import { schema as clientSchema } from '../../configs/clients';
-import { useClientModel } from '../../models/clients';
+import ClientsModel, { ClientSchema } from '../../models/clients';
+import { LoaderInContent } from '../../components/Loading';
+import CenterInfo from '../../components/CenterInfo';
+
+// Un intento de estado;
+let first = true;
 
 export default function Main() {
     const { searchVal, setTitle } = useOutletContext();
-    const { searchList, getAll } = useClientModel();
-    let list = [];
+    const model = ClientsModel();
+    let listFn = model.list;
+    let listData = model.data;
+    let listLoading = !model.loaded;
 
     // Titulo del Topbar
     useEffect(() => {
         setTitle('Tus clientes');
     }, [setTitle]);
 
-    /**
-     * Se genera la lista acorde a si se esta buscando algun cliente o se quiere ver todos
-     */
-    if (!searchVal || String(searchVal).trim().length === 0) {
-        list = getAll();
-    } else {
-        list = searchList(searchVal);        
-    }
 
-    list = list.map((item, i) => {
-        item = Object.assign({...clientSchema}, item);
+    // Ejecuta el efecto cada vez que searchVal cambie
+    useEffect(() => {
+        if (!first && listLoading) return;
 
-        if (item.businessImg.length < 1) {
-            item.businessImg = 'https://placehold.co/100?text=' + item.businessName.charAt(0);
+        if (String(searchVal).trim().length > 0){
+            listFn((item) => String(item.fullname).toLowerCase().includes(String(searchVal).toLowerCase()));
+        } else {
+            listFn(() => true);
         }
+    // eslint-disable-next-line
+    }, [searchVal]);
 
+    let List = useMemo(() => {
+        if (!Array.isArray(listData)) return [];
+
+        return listData.map((item, i) => {
+            item = Object.assign({ ...ClientSchema }, item);
+
+            const imgUrl = item.businessImg?.length > 0 ? item.businessImg : `https://placehold.co/100?text=${item.businessName.charAt(0)}`;
+
+            return (
+                <Link to={'/clients/' + item.id + '/overview'} key={item.id} className="flex p-3 border-b-[1px] items-center transition-colors duration-[.40s] hover:bg-stone-100">
+                    <img src={imgUrl} className="rounded-full me-2 size-[3rem]" alt="Me at the park." />
+                    <div className="flex flex-col">
+                        <span className="text-black-900">
+                            {item.fullname}
+                        </span>
+                        <span className="text-[.8rem] text-stone-300">
+                            {item.businessName}
+                        </span>
+                    </div>
+                </Link>
+            );
+        });
+    }, [listData]);
+
+    if (model.error) {
+        return (<CenterInfo text="Ocurrio algo mientras cargabamos tus datos" sub="Intenta recargar la pagina" />)
+    } else if (listLoading) {
+        return (<LoaderInContent />);
+    } else if (String(searchVal).length > 0 && Array.isArray(List) && List.length === 0) {
         return (
-            <Link to={'/clients/' + item.id + '/overview'} key={i} className="flex p-3 border-b-[1px] items-center ">
-                <img src={item.businessImg} className="rounded-full me-2 size-[3rem]"  alt="Me at the park."/>
-                <div className="flex flex-col">
-                    <span className="text-black-900">
-                        {item.fullname}
-                    </span>
-                    <span className="text-[.8rem] text-stone-300">
-                        {item.businessName}
-                    </span>
-                </div>
-            </Link>
+            <CenterInfo 
+                icon="search"
+                text="No se han encontrado resultado"
+            />
         );
-    });
-
-    let NoResults = (
-        <div className="flex flex-col justify-center align-center w-full h-full">
-            <i className="bi bi-search text-[4rem] mx-auto mb-3 text-stone-300"></i>
-            <h4 className="mx-auto text-stone-400">No se han encontrado resultados</h4>
-        </div>
-    );
-
-    let NoClients = (
-        <div className="flex flex-col justify-center align-center w-full h-full">
-            <i className="bi bi-search text-[4rem] mx-auto mb-3 text-stone-300"></i>
-            <h4 className="mx-auto text-stone-400">Tu lista de clientes esta vacia</h4>
-        </div>
-    );
+    } else if (Array.isArray(List) && List.length === 0) {
+        return (
+            <CenterInfo 
+                icon="person"
+                text="Sin clientes"
+                sub="Tu lista de clientes esta vacia"
+                btns={[
+                    {
+                        text: 'Crear un nuevo cliente',
+                        icon: 'plus',
+                        link: '/clients/new'
+                    }
+                ]}
+            />
+        );
+    }
 
     return (
         <div className="flex flex-col h-full">
-            {(String(searchVal).length > 0 && list.length === 0)? NoResults : (list.length > 0 ? list : NoClients)}
+            {List}
             <Link to='/clients/new' className="absolute bg-primary bottom-[1rem] flex items-center justify-center right-[1rem] rounded-full size-[3rem] text-[1.5rem] text-white">
                 <i className="bi bi-plus"></i>
             </Link>

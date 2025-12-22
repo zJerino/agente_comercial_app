@@ -1,13 +1,10 @@
 /**
- * Esquema de Productos
+ * Esquema de las categorias de productos
  */
 export const schema = {
-    id: '',
     name: '',
     price: 0.00,
-    description: '',
-    images: [],
-    createdAt: 0,
+    description: ''
 };
 
 /**

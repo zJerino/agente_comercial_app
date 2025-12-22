@@ -1,6 +1,5 @@
 import { useEffect, useState } from 'react';
-import { useLocalStorage } from "react-use";
-import { tryParseJSON } from '../configs/utils';
+import { DBInstance as DB } from '../classes/database';
 
 /**
  * API URL
@@ -53,10 +52,7 @@ function isUpdated(fechaTasa) {
 export default function DolarModel() {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
-    const [value, setValue] = useLocalStorage('dolarbcv', {});
-
-    let data = tryParseJSON(value) || {};
-    data = Object.assign({...apiRespondeSchema}, data);
+    const [data, setData] = useState(apiRespondeSchema);
 
     useEffect(() => {
         const fetchData = async () => {
@@ -68,7 +64,10 @@ export default function DolarModel() {
             }
 
             const json = await api.json();
-            setValue(JSON.stringify(Object.assign({...apiRespondeSchema}, json)));
+            
+            const o = {key: 'dolar', ...json};
+
+            await DB.add('utils', o);
           } catch (err) {
             setError(err);
           } finally {
@@ -76,12 +75,16 @@ export default function DolarModel() {
           }
         };
 
-        if (data.fechaActualizacion.length <= 0 || !isUpdated(data.fechaActualizacion)) {
-            fetchData();
-        } else {
-            setLoading(false);
-        }
-    }, [data.fechaActualizacion, setValue]);
+        DB.get('utils', 'dolar').then((v) => {
+            v = Object.assign({...apiRespondeSchema}, v);
+            if (v.fechaActualizacion.length <= 0 || !isUpdated(v.fechaActualizacion)) {
+                fetchData();
+            } else {
+                setData(v);
+                setLoading(false);
+            }
+        });
+    }, [data.fechaActualizacion, setData]);
 
     return {
         /**

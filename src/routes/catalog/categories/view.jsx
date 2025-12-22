@@ -1,19 +1,71 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate, useParams, Link, useOutletContext } from 'react-router';
-import { CategoryModel } from '../../../models/products-categories';
-import { ProductsModel } from '../../../models/products';
 import Carousel from '../../../components/Carousel';
+
+import Model, { Remove } from '../../../models/catalog/category';
+import { getAll } from '../../../models/catalog/product';
+import { LoaderInContent } from '../../../components/Loading';
 
 export default function Main() {
     const { id } = useParams();
     const [ isDelete, setDelete ] = useState(false);
     const { setTitle } = useOutletContext();
-
-    const navigate = useNavigate();
-    const model = CategoryModel();
-    const pModel = ProductsModel();
-    const category = model.category(id);
+    const [ category, setCategory ] = useState(null);
+    const [ products, setProducts ] = useState(null);
+    const [ loading, setLoading ] = useState(true); // Estado de carga. Por defecto es verdadero
     
+    const navigate = useNavigate();
+
+    /**
+     * Obtener Categoria
+     */
+    useEffect(() => {
+        let model = Model(id);
+        model.promise.then((c) => {
+            setCategory(c);
+            
+            /**
+             * Busqueda de los productos
+             */
+            // eslint-disable-next-line
+            getAll((p) => c.products.some((e) => e == p.id)).then((li) => {
+                if (Array.isArray(li)) return setProducts(li);
+                setProducts([]);
+            }).catch(() => setProducts([]));
+
+            setLoading(false); // Estado de carga
+        }).catch(() => {
+            setLoading(false);
+        });
+    }, [id]);
+
+    /**
+     * Pantalla de carga
+     */
+    if (loading) {
+        return (
+            <LoaderInContent sub="Cargando categoria" />
+        );
+    } else if (isDelete) {
+        return (
+            <div className="flex flex-col justify-center align-center w-full h-full">
+                <i className="bi bi-x-circle text-[4rem] mx-auto mb-3 text-stone-300"></i>
+                <h4 className="mx-auto text-stone-400">La categoria fue borrada.</h4>
+            </div>
+        );
+    } else if (category === null) {
+        return (
+            <div className="flex flex-col justify-center align-center w-full h-full">
+                <i className="bi bi-emoji-dizzy-fill text-[4rem] mx-auto mb-3 text-stone-300"></i>
+                <h4 className="mx-auto text-stone-400">La categoria que buscas no existe.</h4>
+            </div>
+        );
+    } else if (products === null) {
+        return (
+            <LoaderInContent sub="Cargando productos" />
+        );
+    }
+
     /**
      * Aviso de inexistencia
      */
@@ -35,8 +87,13 @@ export default function Main() {
     * Funcion para borrar categorias
     */
     const handleDelete = function () {
-        model.delete(id);
-        setDelete(true);
+        console.log('Borrando, ', id)        
+        Remove(id).then(() => {
+            console.log('Borrado ', id)            
+            setDelete(true);
+        }).catch(() => {
+            // Error
+        });
     };
 
     /**
@@ -81,9 +138,20 @@ export default function Main() {
     }
 
     /**
-     * Filtrado y creacion de elementos
+      * Filtrado y creacion de elementos
      */
-    let products = pModel.getAll().filter((item) => category.products.includes(item.id)).map((item, key) => {
+    let pro = products.map((item, key) => {
+        /**
+         * Procesado de imagenes
+         */
+        item.images = item.images.map((el) => {
+            let val = el;
+            if (Array.isArray(val) && typeof val[1] === 'object' && val[1].constructor.name === 'ArrayBuffer') {
+                val = URL.createObjectURL(new Blob([val[1]], {type: val[0]}));
+            }
+            return val;
+        });
+
         return (
             <Link className="flex flex-col p-1 border-[1px] rounded-[.5rem] gap-2" key={key} to={"/catalog/product/" + item.id}>
                 <Carousel 
@@ -105,7 +173,7 @@ export default function Main() {
     return (
         <>
             <div className="flex flex-col gap-3 p-2">
-                {products}
+                {pro}
             </div>
             {deleteModal}
         </>

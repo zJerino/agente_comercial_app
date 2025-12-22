@@ -1,16 +1,17 @@
 import DolarPrice from '../components/DolarPrice';
 import BoxI from '../components/BoxInfo';
-import { useClientModel } from '../models/clients';
+import { GetTotal } from '../models/clients';
 import { ProductsModel } from '../models/products';
 
 export default function Home() {
     const commitHash = process.env.REACT_APP_VERSION_ID;
     let version = commitHash ? <small className="text-gray-300 text-center text-[0.75rem] mt-auto">Version: {commitHash.substring(0, 7)}</small> : '';
+    let [ clientCount ] = GetTotal();
 
     /**
      * Totales
      */
-    let clientTotal = useClientModel().getTotal();
+    let clientTotal = clientCount;
     let ordersTotal = 0;
     let productsTotal = ProductsModel().getTotal();
     

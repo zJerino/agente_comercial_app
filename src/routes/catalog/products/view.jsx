@@ -1,21 +1,62 @@
-import { useState } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { useNavigate, useParams } from 'react-router';
-import { ProductsModel } from '../../../models/products';
 import DolarModel from '../../../models/dolar';
 import Carousel from '../../../components/Carousel';
+
+import Model, {  Remove } from '../../../models/catalog/product';
+import { LoaderInContent } from '../../../components/Loading';
+
 let imgDefault = 'https://placehold.co/300x100?text=';
 
 
 export default function Main() {
     const { price, isLoading } = DolarModel();
     const { id } = useParams();
-    const [isDeleted, setDelete] = useState(false);
     const navigate = useNavigate();
-    const model = ProductsModel();
+    const [isDeleted, setDelete] = useState(false);
+    const [product, setProduct] = useState(null);
+    const [loading, setLoading] = useState(true);
 
-    const product = model.product(id, 'id'); // Obtiene el objeto deseado
+    /**
+     * Obtener producto
+     */
+    useEffect(() => {
+        let model = Model(id);
+        model.promise.then((c) => {
+            setProduct(c);
+            setLoading(false);
+        }).catch(() => {
+            setLoading(false);            
+        });
+    }, [id]);
+    
+    /**
+     * Procesa las imagenes 
+     */
+    let images = useMemo(() => {
+        return product?.images.map((img, key) => {
+            let imgSrc = img;
 
-    if (product === undefined) {
+            if (Array.isArray(img) && img.length === 2 && typeof img[1] === 'object' && img[1].constructor.name === 'ArrayBuffer') {
+                let newBlob = new Blob([img[1]], {type: img[0]});
+                imgSrc = URL.createObjectURL(newBlob);
+
+            }
+
+            return imgSrc;
+        });
+    }, [product]);
+
+    /**
+     * Pantalla de carga
+     */
+    if (loading) {
+        return (
+            <LoaderInContent />
+        );
+    }
+    
+    if (product === null) {
         if (isDeleted) {
             setTimeout(() => {
                 navigate('/catalog');
@@ -41,7 +82,7 @@ export default function Main() {
     * Funcion para borrar clientes
     */
     const handleDelete = function () {
-        model.delete(id);
+        Remove(id);
         setDelete(true);
     };
 
@@ -50,7 +91,7 @@ export default function Main() {
             <div className="relative">
                 <div className="absolute size-full rounded-b-[2rem] z-[10]" />
                 <Carousel
-                    items={product.images.length === 0 ? [(imgDefault + 'No+Image')] : product.images}
+                    items={product.images.length === 0 ? [(imgDefault + 'No+Image')] : images}
                     autoSlide={true}
                     autoSlideInterval={5000}
                     customClasses={{

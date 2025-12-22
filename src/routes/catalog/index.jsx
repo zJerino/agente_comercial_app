@@ -1,168 +1,160 @@
+import { useEffect, useMemo, useState } from 'react';
 import { Link, useOutletContext } from 'react-router';
-import { schema as productSchema } from '../../configs/products';
-import { schema as categorySchema } from '../../configs/productCategory';
-import { ProductsModel } from '../../models/products';
-import { CategoryModel } from '../../models/products-categories';
+import CategoriesModel from '../../models/catalog/categories';
+import { getAll } from '../../models/catalog/product';
+import { LoaderInContent, Spinner } from '../../components/Loading';
+import CenterInfo from '../../components/CenterInfo';
 
 let imgDefault = 'https://placehold.co/100?text=';
 
 /**
  * Pagina de inicio de las ordenes
  */
-export default function Main() {
-    const { searchVal, restSearch, setTitle } = useOutletContext();
-    const cModel = CategoryModel();
-    const pModel = ProductsModel();
-    let products = pModel.getAll();
-    let categories = cModel.getAll();
+let first = true;
 
-    // Titulo del Topbar
-    setTitle('Catalogo');
+/**
+ * Limite de productos a mostrar
+ */
+let limit = 5;
 
-    /**
-     * En caso de busqueda
-     */
-    if (searchVal && String(searchVal).trim().length > 0) {
+/**
+ * Categorias
+ */
+function Category({ item }) {
+    const [ products, setProducts ] = useState(null);
 
-        let se = String(searchVal).trim().toLowerCase();
+    let pro = null;
+    useEffect(() => {
+        if (products === null) {
+            let pids = Array.isArray(item.products) ? item.products : [];
 
-        let clist = categories.filter(item => item.name.toLowerCase().includes(se)).map((item, i) => {
-            item = Object.assign({ ...categorySchema }, item);
-
-            return (
-                <Link to={'/catalog/category/' + item.id} key={i} className="flex p-3 border-b-[1px] items-center " onClick={() => restSearch()}>
-                    <div className="flex flex-col">
-                        <span className="text-black-900">
-                            {item.name}
-                        </span>
-                    </div>
-                </Link>
-            );
-        });
-
-        let plist = products.filter(item => item.name.toLowerCase().includes(se)).map((item, i) => {
-            item = Object.assign({ ...productSchema }, item);
-
-            return (
-                <Link to={'/catalog/product/' + item.id} key={i} className="flex p-3 border-b-[1px] items-center " onClick={() => restSearch()}>
-                    <img src={item.images.length > 0 ? item.images[0] : imgDefault + item.name.substr(0, 2)} className="rounded-full me-2 size-[3rem]"  alt="Me at the park."/>
-                    <div className="flex flex-col">
-                        <span className="text-black-900">
-                            {item.name}
-                        </span>
-                    </div>
-                </Link>
-            );
-        });
-
-        if (clist.length === 0 && plist.length === 0){
-            return (
-                <div className="flex flex-col justify-center align-center w-full h-full">
-                    <i className="bi bi-search text-[4rem] mx-auto mb-3 text-stone-300"></i>
-                    <h4 className="mx-auto text-stone-400">No se han encontrado resultados</h4>
-                </div>
-            );
+            /**
+             * Obtiene los resultados
+             */
+            // eslint-disable-next-line
+            getAll((v) => pids.some((e) => e == v.id)).then((li) => {
+                if (Array.isArray(li)) return setProducts(li.slice(0, limit));
+                setProducts([]);
+            }).catch(() => setProducts([]));
         }
+    // eslint-disable-next-line
+    }, [item.id]);
+    
 
-        return (
-            <div className="flex flex-col gap-3">
-                {clist.length > 0 ? (
-                    <div className="flex flex-col gap-1">
-                        <div className="font-[700] fv-small w-full flex gap-2 h-[2.1rem] flex items-center text-primary px-2">
-                            <span>Categorias</span>
-                        </div>
-                        <div className="flex flex-col h-full">
-                            {clist}
-                        </div>
-                    </div>
-                ) : ''}
-                {plist.length > 0 ? (
-                    <div className="flex flex-col gap-1">
-                        <div className="font-[700] fv-small w-full flex gap-2 h-[2.1rem] flex items-center text-primary px-2">
-                            <span>Productos</span>
-                        </div>
-                        <div className="flex flex-col h-full">
-                            {plist}
-                        </div>
-                    </div>
-                ) : ''}
-            </div>
+    if (products !== null && products.length === 0) {
+        pro = (
+            <Link to={"/catalog/category/"+item.id+"/add"} className="flex flex-col rounded-[0.85rem] overflow-hidden relative border-[1px] hover:border-dashed h-[7rem] w-full items-center justify-center mx-2 hover:border-primary transition-colors duration-[.30s]">
+                <i className="bi bi-plus text-stone-300 text-[1.25rem]"></i>
+                <span className="font-[600] px-2 text-black transition-all duration-[.25s]">
+                    Categoria sin productos
+                </span>
+                <span className="font-[200] text-[.85rem] px-2 text-stone-300 transition-all duration-[.25s]">
+                    Click para agregar alguno
+                </span>
+            </Link>
         );
+    } else if (Array.isArray(products)) {
+        pro = products.map((it, key) => {
+            if (Array.isArray(it.images[0]) && typeof it.images[0][1] === 'object' && it.images[0][1].constructor.name === 'ArrayBuffer') {
+                it.images[0] = URL.createObjectURL(new Blob([it.images[0][1]], {type: it.images[0][0]}));
+            }
+            return (
+                <Link to={"/catalog/product/" + it.id} key={key} className="flex flex-col rounded-[0.85rem] overflow-hidden relative border-[1px] size-[7rem] min-w-[7rem]">
+                    <img src={typeof it.images[0] === 'string' ? it.images[0] : imgDefault + 'S'} alt="A epic foto from product #id" className="block size-full" />
+                    <span className="font-[600] w-full absolute bottom-[-0.75rem] hover:bottom-[-0.5rem] pb-[1rem] px-2 bg-gradient-to-t from-black/60 hover:from-black/80 text-white transition-all duration-[.25s] items-end flex h-full" style={{ textShadow: '0 1px 2px black' }}>{it.name}</span>
+                </Link>
+            );
+        });
     }
 
-    /**
-     * Maximo de elemento por seccion
-     */
-    let limit = 5;
-
-    /**
-     * Ultimos productos agregados
-     */
-    let lastProducts = products.reverse().slice(0, limit).map((item, key) => {
-        item = Object.assign({ ...productSchema }, item);
-        return (
-            <Link to={'/catalog/product/' + item.id} key={key} className="flex flex-col min-h-[8rem] min-w-[8rem] rounded-[.5rem] border-[1px] max-w-[8rem]">
-                <img className=" max-h-[9rem] w-[9rem] mx-auto rounded-t-[.4rem]" src={item.images.length > 0 ? item.images[0] : (imgDefault + (item.name.length > 0 ? item.name.charAt(0) : 'No+Image'))} alt={'Imagen of product #' + item.id} />
-                <span className="font-[700] fv-small max-w-[9rem] my-auto p-2 text-break text-center">{item.name.trim().slice(0, 20) + (item.name.length > 20 ? '...' : '')}</span>
-            </Link>
-        )
-    });
-    lastProducts.push(
-        <Link to={'/catalog/product/new'} key={lastProducts.length} className="flex flex-col min-h-[8rem] min-w-[8rem] rounded-[.5rem] max-w-[8rem] bg-gray-100 text-stone-400">
-            <i className="bi bi-plus-circle-fill mx-auto text-[5rem] text-center w-[6rem] my-auto"></i>
-            {/* <span className="font-[700] fv-small max-w-[9rem] my-auto p-2 text-break text-center">Agregar un producto</span> */}
-        </Link>
-    );
-
-
-    let categoriesList = categories.map((item, key) => {
-        let cProducts = products.reverse().filter((pro) => item.products.includes(pro.id)).slice(0, limit).map((pro, proKey) => {
-            return (
-                <Link to={'/catalog/product/' + pro.id} key={proKey} className="flex flex-col min-h-[8rem] min-w-[8rem] rounded-[.5rem] border-[1px] max-w-[8rem]">
-                    <img className=" max-h-[9rem] w-[9rem] mx-auto rounded-t-[.4rem]" src={pro.images.length > 0 ? pro.images[0] : (imgDefault + (pro.name.length > 0 ? pro.name.charAt(0) : 'No+Image'))} alt={'Imagen of product #' + pro.id} />
-                    <span className="font-[700] fv-small max-w-[9rem] my-auto p-2 text-break text-center">{pro.name.trim().slice(0, 20) + (pro.name.length > 20 ? '...' : '')}</span>
-                </Link>
-            );
-        });
-
-        cProducts.push(
-            <Link to={'/catalog/category/' + item.id + '/add'} key={cProducts.length} className="flex flex-col min-h-[8rem] min-w-[8rem] rounded-[.5rem] max-w-[8rem] bg-gray-100 text-stone-400">
-                <i className="bi bi-plus-circle-fill mx-auto text-[5rem] text-center w-[6rem] my-auto"></i>
-                {/* <span className="font-[700] fv-small max-w-[9rem] my-auto p-2 text-break text-center">Agregar un producto</span> */}
-            </Link>
-        );
-
-        return (
-            <div className="flex flex-col gap-2">
-                <Link key={key} className="font-[700] fv-small w-full flex gap-2 h-[2.1rem] flex items-center" to={'/catalog/category/' + item.id}>
-                    <span>{item.name}</span>
-                    <i className="bi bi-chevron-right ms-auto"></i>
-                </Link>
-                <div className="flex overflow-x-auto gap-3">
-                    {cProducts}
-                </div>
-            </div>
-        )
-    });
-
     return (
-        <div className="flex flex-col gap-3 px-2 my-5">
-            <div className="flex flex-col gap-5">
-                <div className="flex flex-col gap-2">
-                    <div className="font-[700] fv-small w-full flex gap-2 h-[2.1rem] flex items-center">
-                        <span>Ultimos productos agregados </span>
-                        <Link to='/catalog/products' className="btn btn-solid-primary btn-sm ms-auto">Ver todos</Link>
-                    </div>
-                    <div className="flex overflow-x-auto gap-3">
-                        {lastProducts}
-                    </div>
-                </div>
-                {categoriesList}
+        <div className="flex flex-col gap-2">
+            <div className="flex gap-3 px-2  items-center justify-between">
+                <span className="font-[600]">{item.name}</span>
+                <Link to={'/catalog/category/' + item.id} className="btn btn-sm bg-blue-200 hover:bg-blue-300">
+                    Ver mas
+                </Link>
             </div>
-
+            <div className={"flex gap-2 relative" + (pro === null ? '': ' overflow-x-auto')}>
+                {pro === null ? <Spinner className="mx-auto size-[2rem]" /> : pro}
+            </div>
+            
             <Link to='/catalog/new' className="fixed bg-primary bottom-[5rem] flex items-center justify-center right-[2rem] rounded-full size-[3rem] text-[1.5rem] text-white">
                 <i className="bi bi-plus"></i>
             </Link>
         </div>
     );
+}
+
+export default function Main() {
+    const { searchVal, setTitle } = useOutletContext();
+    const model = CategoriesModel();
+    let listFn = model.list;
+    let listData = model.data;
+    let listLoading = !model.loaded;
+    
+    // Titulo del Topbar
+    useEffect(() => {
+        setTitle('Tu catalogo');
+    }, [setTitle]);
+
+    // Ejecuta el efecto cada vez que searchVal cambie
+    useEffect(() => {
+        if (!first && listLoading) return;
+
+        if (String(searchVal).trim().length > 0){
+            listFn((item) => String(item.name).toLowerCase().includes(String(searchVal).toLowerCase()));
+        } else {
+            listFn(() => true);
+        }
+    // eslint-disable-next-line
+    }, [searchVal]);
+
+    let List = useMemo(() => {
+        if (!Array.isArray(listData)) return [];
+
+        return listData.map((item, i) => (<Category key={item.id} item={item} />));
+    }, [listData]);
+
+    // Estado de carga
+    if (listLoading) return (<LoaderInContent />)
+
+    // Lista vacia
+    if (Array.isArray(List) && List.length === 0) {
+        // Busqueda
+        if (searchVal !== null && String(searchVal).trim().length > 0) {
+            return <CenterInfo icon="search" text="No se han encontrado resultado" />
+        } else {
+            return <CenterInfo 
+                icon="bi-balloon text-black-400"
+                text="Catalogo vacio"
+                sub="Todavia no has agregado ninguna categoria o productos"
+                classes={{
+                    icon: 'text-[4rem] flex justify-center items-center',
+                    text: 'text-black font-[600]',
+                }}
+                btns={[
+                    {
+                        text: 'Crear una categoria',
+                        icon: 'card-list',
+                        link: '/catalog/category/new',
+                    },
+                    {
+                        text: 'Crear un producto',
+                        icon: 'box',
+                        link: '/catalog/product/new',
+                        bg: 'bg-stone-200',
+                    }
+                ]}
+            />;
+        }
+    } else {
+        return (
+            <div className="flex flex-col gap-4 my-4">
+                <div className="flex flex-col gap-2">
+                    {List}
+                </div>
+            </div>
+        );
+    }
 }
