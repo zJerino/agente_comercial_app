@@ -64,10 +64,15 @@ export default function DolarModel() {
             }
 
             const json = await api.json();
+
+            setData(json);
             
             const o = {key: 'dolar', ...json};
 
-            await DB.add('utils', o);
+            let exists = await DB.exists('utils', 'dolar');
+
+            if (exists) await DB.update('utils', o);
+            if (!exists) await DB.add('utils', o);
           } catch (err) {
             setError(err);
           } finally {

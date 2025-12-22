@@ -1,3 +1,4 @@
+import { useEffect, useState } from 'react';
 import { useCopyToClipboard } from 'react-use';
 import DolarModel from '../models/dolar';
 
@@ -5,11 +6,16 @@ import DolarModel from '../models/dolar';
  * Esto es un componente que indica el precio del dolar (Venezuela)
  */
 export default function Main() {
+    const [ tprice, setPrice ] = useState(0);
     const { price, isLoading, lastUpdate, error } = DolarModel();
     // eslint-disable-next-line
     const [state, copyToClipboard] = useCopyToClipboard();
 
     let status;
+
+    useEffect(() => {
+        setPrice(price);
+    }, [ price ]);
 
     /**
      * Si no existe fecha
@@ -19,12 +25,24 @@ export default function Main() {
     }
 
     if (error) {
-        return;
+        console.debug('Ocurrio un problema con el componente de precios del dolar: ', error);
+        return (
+            <div className="bg-red-600 transition-colors duration-[.4s] rounded-[1rem] px-4 py-3 text-white flex items-center gap-5">
+                <i className="bi bi-currency-dollar text-[2.5rem]"></i>
+                <div className="flex flex-col grow-[1]">
+                    <div className="flex flex-row leading-[.85rem]">
+                        <span className="font-[700] fv-small">Dolar BCV</span>
+                        <a className="ms-auto" href="https://www.bcv.org.ve/#:~:text=USD" rel="noreferrer" target="_blank"><i className="bi bi-box-arrow-up-right px-2 text-white text-decoration-none"></i></a>
+                    </div>
+                    <h3 className="text-[1.25rem] font-[500]">Ocurrio un error</h3>
+                </div>
+            </div>
+        );
     }
 
     if (isLoading) {
         return (
-            <div className="bg-green-600 rounded-[1rem] px-4 py-3 text-white flex items-center gap-5">
+            <div className="bg-green-400 transition-colors duration-[.4s] rounded-[1rem] px-4 py-3 text-white flex items-center gap-5">
                 <i className="bi bi-currency-dollar text-[2.5rem]"></i>
                 <div className="flex flex-col grow-[1]">
                     <div className="flex flex-row">
@@ -38,7 +56,7 @@ export default function Main() {
     }
 
     return (
-        <div className="bg-green-600 rounded-[1rem] px-4 py-3 text-white flex items-center gap-5">
+        <div className="bg-green-600 transition-colors duration-[.4s] rounded-[1rem] px-4 py-3 text-white flex items-center gap-5">
             <i className="bi bi-currency-dollar text-[2.5rem]"></i>
             <div className="flex flex-col grow-[1]">
                 <div className="flex flex-row leading-[.85rem]">
@@ -46,7 +64,7 @@ export default function Main() {
                     {/* Pronto: agregar aqui un enlace para abrir una calculadora con el precio del dolar <i className="ms-auto bi bi-calculator-fill px-2"></i> */}
                     <a className="ms-auto" href="https://www.bcv.org.ve/#:~:text=USD" rel="noreferrer" target="_blank"><i className="bi bi-box-arrow-up-right px-2 text-white text-decoration-none"></i></a>
                 </div>
-                <h3 className="text-[1.25rem] font-[500]"><span onClick={() => copyToClipboard(price)}>{price}</span> Bs</h3>
+                <h3 className="text-[1.25rem] font-[500]"><span onClick={() => copyToClipboard(tprice)}>{tprice}</span> Bs</h3>
                 <h5 className="text-[0.9rem] font-[200]">{status}</h5>
             </div>
         </div>

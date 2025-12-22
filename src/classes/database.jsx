@@ -97,7 +97,7 @@ class IDBManager {
     get(collectionName, id) {
         return new Promise((resolve, reject) => {
             try {
-                const request = this._getTransaction(collectionName, 'readonly').get(id);
+                const request = this._getTransaction(collectionName, 'readonly').get((isNaN(Number(id)) ? id : Number(id)));
                 request.onsuccess = () => resolve(request.result);
                 request.onerror = () => reject(request.error);
             } catch (e) { reject(e); }
@@ -115,9 +115,9 @@ class IDBManager {
     }
 
     async update(collectionName, data) {
-        if (!data.id) throw new Error("Se requiere ID");
+        if (!data.id && !data.key) throw new Error("Se requiere ID");
         try {
-            const current = await this.get(collectionName, data.id);
+            const current = await this.get(collectionName, (data.id ? (isNaN(Number(data.id)) ? data.id : Number(data.id)) : data.key));
             return new Promise((resolve, reject) => {
                 const store = this._getTransaction(collectionName, 'readwrite');
                 const payload = {
@@ -135,7 +135,7 @@ class IDBManager {
     remove(collectionName, id) {
         return new Promise((resolve, reject) => {
             try {
-                const request = this._getTransaction(collectionName, 'readwrite').delete(id);
+                const request = this._getTransaction(collectionName, 'readwrite').delete((isNaN(Number(id)) ? id : Number(id)));
                 request.onsuccess = () => resolve(true);
                 request.onerror = () => reject(request.error);
             } catch (e) { reject(e); }
@@ -148,6 +148,48 @@ class IDBManager {
                 const request = this._getTransaction(collectionName, 'readonly').count();
                 request.onsuccess = () => resolve(request.result);
                 request.onerror = () => reject(request.error);
+            } catch (e) { reject(e); }
+        });
+    }
+
+    /**
+     * @returns {Promise<boolean>}
+     */
+    exists(collectionName, query) {
+        return new Promise((resolve, reject) => {
+            try {
+                const store = this._getTransaction(collectionName, 'readonly');
+
+                if (typeof query === 'string' || typeof query === 'number') {
+                    const request = store.count(query);
+                    request.onsuccess = () => resolve(request.result > 0);
+                    request.onerror = () => reject(request.error);
+                    return;
+                }
+
+                if (typeof query === 'object' && query !== null) {
+                    const keys = Object.keys(query);
+                    if (keys.length === 0) return resolve(false);
+
+                    const request = store.openCursor();
+                    request.onsuccess = (event) => {
+                        const cursor = event.target.result;
+                        if (cursor) {
+                            const match = keys.every(k => cursor.value[k] === query[k]);
+                            if (match) {
+                                resolve(true);
+                            } else {
+                                cursor.continue();
+                            }
+                        } else {
+                            resolve(false);
+                        }
+                    };
+                    request.onerror = () => reject(request.error);
+                    return;
+                }
+
+                resolve(false);
             } catch (e) { reject(e); }
         });
     }
